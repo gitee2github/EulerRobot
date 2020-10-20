@@ -1,0 +1,18 @@
+suite: virttest
+testcase: virttest
+category: functional
+
+vt_type: qemu
+
+virttest:
+  vt_reference:
+  - qemu_img
+
+---
+vt_type: qemu
+vt_no_filter: commit
+vt_only_filter: info.change.block_interface.default
+
+virttest:
+  vt_reference:
+  - qemu_disk_img

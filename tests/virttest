@@ -1,0 +1,182 @@
+#!/bin/bash
+# - vt_name
+# - vt_suffix
+# - vt_reference
+# - vt_type
+# - vt_guest_os
+## - vt_machine_type
+## - vt_no_filter
+## - vt_only_filter
+## - vt_env_type
+## - no_filter
+## - only_filter
+## - vt_qemu_bin
+## - vt_qemu_dst_bin
+## - vt_extra_params
+## - job_timeout
+
+. $LKP_SRC/lib/debug.sh
+. $LKP_SRC/lib/env.sh
+. $LKP_SRC/lib/upload.sh
+
+set_up() {
+	iptables -F
+
+	if ! brctl show virbr0 > /dev/null; then
+		log_cmd systemctl restart libvirtd
+	fi
+	ps -fC qemu-img | grep qemu-img && log_cmd killall -9 qemu-img
+	log_cmd targetcli clearconfig confirm=True
+
+	# virttest qemu path
+	if ! ls /usr/bin/qemu-kvm > /dev/null; then
+		# upstream qemu path
+		if [ -e /usr/libexec/qemu-kvm ]; then
+			log_cmd ln -s /usr/libexec/qemu-kvm /usr/bin/qemu-kvm
+		fi
+	fi
+
+	if [ "$vt_type" = "libvirt" ]; then
+		local vt_xml=$LKP_SRC/virttest/avocado-vt-vm1-$arch.xml
+		if [ "$arch" = "aarch64" ]; then
+			case "$vt_guest_os" in
+				*openEuler.20.03) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-aarch64.qcow2/" $vt_xml ;;
+				*               ) log_cmd sed -i "s/[^/]*\.qcow2/f28-aarch64.qcow2/"             $vt_xml ;;
+			esac
+
+			# upstream edk2 path
+			if [ ! -e /usr/share/edk2/aarch64/QEMU_EFI-pflash.raw ]; then
+				# Fedora/CentOS/Redhat edk (aavmf) path
+				if [ -e /usr/share/AAVMF/AAVMF_CODE.fd ]; then
+					log_cmd sed -i "s|/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw|/usr/share/AAVMF/AAVMF_CODE.fd|" $vt_xml
+				fi
+			fi
+		fi
+		log_cmd virsh define $vt_xml
+	fi
+}
+
+tear_down() {
+	local errno=$1
+
+	# collect aexpect (eg: serial console) logs
+	ls -d /tmp/aexpect_* | while read aexpect; do
+		case "$(awk '$5=="command:"{print;exit}' $aexpect/server-log | sed "s/^.*command: *//")" in
+			ssh*          ) aexpect_errno=$errno; command=ssh i   ;;
+			scp*          ) aexpect_errno=$errno; command=scp     ;;
+			tshark*       ) aexpect_errno=0     ; command=tshark  ;;
+			tcpdump*      ) aexpect_errno=0     ; command=tcpdump ;;
+			virsh*console*) aexpect_errno=x     ; command=console ;;
+			*             ) aexpect_errno=0     ; command=others  ;;
+		esac
+		if [ "$errno" = "$aexpect_errno" ]; then
+			rm -rf "$aexpect"
+			continue
+		fi
+		date=$(ls -lrt --full-time "$aexpect" | awk 'NF>=9{print$6,$7,$8;exit}' | sed 's/^\(.\{19\}\).*$/\1/;s/[:-]//g;s/ /-/g')
+		ls "$aexpect" | while read file; do
+			if [ ! -s "$aexpect/$file" ]; then
+				rm -rf "$aexpect/$file"
+			fi
+		done
+		if ! mv "$aexpect" "$logs_dir/latest/sysinfo/post/aexpect-$command-$date-${aexpect##*_}"; then
+			rm -rf "$aexpect"
+		fi
+	done
+
+	if [ "$errno" != "0" ]; then
+		ps -fC qemu-img qemu-kvm aexpect-helper && killall qemu-img qemu-kvm aexpect-helper
+		local pids=$(ps -ef | awk '$8!="awk"&&/avocado.*run/{print$2}')
+		sleep 1
+		killall -9 qemu-img qemu-kvm aexpect-helper
+		[ -n "$pids" ] && kill -9 $pids
+
+		ps aux > "$logs_dir/latest/sysinfo/post/ps_aux"
+		ps -e f > "$logs_dir/latest/sysinfo/post/ps-e_f"
+		rpm -qa | sort > "$logs_dir/latest/sysinfo/post/rpm-qa"
+		tail -n 2048 /var/log/messages > "$logs_dir/latest/sysinfo/post/tail_n_2048_var_log_messages"
+		tar -zcvf "$logs_dir/latest/sysinfo/post/var_log_libvirt.tar.gz" /var/log/libvirt
+	fi
+
+	if [ "$vt_type" = "libvirt" ]; then
+		virsh list --all | awk '/shut off$/{print$2}' | while read vm; do
+			if ! log_cmd virsh undefine $vm --nvram; then
+				log_cmd virsh undefine $vm
+			fi
+		done
+	fi
+
+	return $errno
+}
+
+run_test() {
+	(
+	set_up
+	# used to collect aexpect (eg: serial console) logs
+	export AEXPECT_DEBUG=on
+	log_cmd "$@"
+	tear_down $?
+	return $?
+	)
+}
+
+conf_file=$(find /usr/local/lib/ -name "avocado.conf")
+[ -e "$conf_file" ] || die "Missing config file avocado.conf"
+
+logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s/^~/|$(cd ~; pwd)/|")
+[ -z "$logs_dir" ] && die "Not found logs_dir in avocado.conf"
+
+if [ "$arch" = "aarch64" ]; then
+	[ "$vt_machine_type" = "q35" ] && die "$arch vt_machine_type=$vt_machine_type"
+else
+	[ "$vt_machine_type" = "arm64-pci" ] && die "$arch vt_machine_type=$vt_machine_type"
+fi
+
+[ -z "$vt_name" ] && vt_name=$vt_reference
+[ -z "$vt_type" ] && vt_type="libvirt"
+[ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.Fedora.28"
+[ -z "$vt_machine_type" ] &&
+	if [ "$arch" = "aarch64" ]; then
+		vt_machine_type="arm64-pci"
+	else
+		vt_machine_type="q35"
+	fi
+[ -z "$job_timeout" ] && job_timeout=600
+
+base_params=(--vt-type "$vt_type")
+base_params+=(--vt-guest-os "$vt_guest_os")
+base_params+=(--vt-machine-type "$vt_machine_type")
+
+extra_params=()
+[ -n "$vt_no_filter" ] && extra_params+=(--vt-no-filter "$vt_no_filter")
+[ -n "$vt_only_filter" ] && extra_params+=(--vt-only-filter "$vt_only_filter")
+
+vt_tests=$(avocado list "${vt_reference:?}" "${base_params[@]}" "${extra_params[@]}")
+[ $? -eq 0 ] || die "Failed to exec: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
+
+vt_tests=$(echo "$vt_tests" | awk '{print$2}')
+for _no_filter in $no_filter; do
+	vt_tests=$(echo "$vt_tests" | grep -Ev "$_no_filter") || break
+done
+for _only_filter in $only_filter; do
+	vt_tests=$(echo "$vt_tests" | grep -E "$_only_filter") || break
+done
+[ -z "$vt_tests" ] && die "Not found tests: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
+
+ok=0
+all=0
+for vt_test in $vt_tests; do
+	run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
+	[ $? -eq 0 ] && ((ok++))
+	((all++))
+done
+
+echo "$vt_name.result.ok: $ok"
+echo "$vt_name.result.all: $all"
+echo "$vt_name.result.rate: $(($ok*100/$all))"
+
+upload_files -t results "${logs_dir:?}/"*
+rm -rf "${logs_dir:?}/"*
+
+[ $ok -eq $all ]
+exit $?

@@ -1,0 +1,48 @@
+pkgname=virttest
+pkgver=git
+pkgrel=1
+arch=('i386' 'x86_64' 'aarch64')
+url="https://gitee.com/openeuler/avocado-vt"
+license=('GPL' 'GPL' 'GPL' 'GPL')
+source=("https://gitee.com/openeuler/avocado.git" "https://gitee.com/openeuler/avocado-vt.git" "https://gitee.com/openeuler/tp-qemu.git" "https://gitee.com/openeuler/tp-libvirt.git")
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+install_virttest() {
+	local branch=$1
+
+	cd "$srcdir/tp-qemu"
+	git checkout -f "$branch"
+
+	cd "$srcdir/tp-libvirt"
+	git checkout -f "$branch"
+
+	cd "$srcdir/avocado"
+	git checkout -f "$branch"
+	sed -i "s/^libvirt-python/#&/" requirements-selftests.txt
+	pip3 install -r requirements-selftests.txt
+	python3 setup.py install
+
+	cd "$srcdir/avocado-vt"
+	git checkout -f "$branch"
+	sed -i "/^branch: /d" test-providers.d/io-github-autotest-qemu.ini
+	sed -i "/^uri: /c uri: $srcdir/tp-qemu" test-providers.d/io-github-autotest-qemu.ini
+	sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-qemu.ini
+	sed -i "/^branch: /d" test-providers.d/io-github-autotest-libvirt.ini
+	sed -i "/^uri: /c uri: $srcdir/tp-libvirt" test-providers.d/io-github-autotest-libvirt.ini
+	sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-libvirt.ini
+	rm -f test-providers.d/io-github-spiceqa-spice.ini
+	pip3 install -r requirements.txt
+	python3 setup.py install
+
+	avocado vt-bootstrap --vt-type qemu --vt-skip-verify-download-assets --yes-to-all
+	avocado vt-bootstrap --vt-type libvirt --vt-skip-verify-download-assets --yes-to-all
+}
+
+build() {
+	install_virttest "openEuler-20.03"
+}
+
+package() {
+	mkdir -p "${pkgdir}/lkp/benchmarks"
+	cp -f "/usr/local/bin/avocado" "${pkgdir}/lkp/benchmarks"
+}
