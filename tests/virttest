@@ -37,8 +37,8 @@ set_up() {
 	fi
 
 	if [ "$vt_type" = "libvirt" ]; then
-		local vt_xml=$LKP_SRC/virttest/avocado-vt-vm1-$arch.xml
-		if [ "$arch" = "aarch64" ]; then
+		local vt_xml=$LKP_SRC/virttest/avocado-vt-vm1-$os_arch.xml
+		if [ "$os_arch" = "aarch64" ]; then
 			case "$vt_guest_os" in
 				*openEuler.20.03) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-aarch64.qcow2/" $vt_xml ;;
 				*               ) log_cmd sed -i "s/[^/]*\.qcow2/f28-aarch64.qcow2/"             $vt_xml ;;
@@ -126,17 +126,17 @@ conf_file=$(find /usr/local/lib/ -name "avocado.conf")
 logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s/^~/|$(cd ~; pwd)/|")
 [ -z "$logs_dir" ] && die "Not found logs_dir in avocado.conf"
 
-if [ "$arch" = "aarch64" ]; then
-	[ "$vt_machine_type" = "q35" ] && die "$arch vt_machine_type=$vt_machine_type"
+if [ "$os_arch" = "aarch64" ]; then
+	[ "$vt_machine_type" = "q35" ] && die "$os_arch vt_machine_type=$vt_machine_type"
 else
-	[ "$vt_machine_type" = "arm64-pci" ] && die "$arch vt_machine_type=$vt_machine_type"
+	[ "$vt_machine_type" = "arm64-pci" ] && die "$os_arch vt_machine_type=$vt_machine_type"
 fi
 
 [ -z "$vt_name" ] && vt_name=$vt_reference
 [ -z "$vt_type" ] && vt_type="libvirt"
 [ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.Fedora.28"
 [ -z "$vt_machine_type" ] &&
-	if [ "$arch" = "aarch64" ]; then
+	if [ "$os_arch" = "aarch64" ]; then
 		vt_machine_type="arm64-pci"
 	else
 		vt_machine_type="q35"
