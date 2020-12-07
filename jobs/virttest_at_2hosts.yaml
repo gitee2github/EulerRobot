@@ -1,0 +1,19 @@
+suite: virttest
+testcase: virttest
+category: functional
+
+image_server: http://172.168.131.2:11300
+env_type: 2hosts
+
+if role server:
+  virttest-67:
+    vt_reference:
+    - virsh.migrate
+    vt_type: libvirt
+    vt_no_filter: with_cpu_hotplug,with_mem_hotplug,preferred_memory_mode,with_postcopy
+    vt_only_filter: normal_test
+    vt_env_type: 2hosts
+if role client:
+  virttest-00:
+    vt_reference:
+    - remote_deploy
