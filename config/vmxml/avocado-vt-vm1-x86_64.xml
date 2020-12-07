@@ -1,0 +1,235 @@
+<domain type='kvm'>
+  <name>avocado-vt-vm1</name>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>8</vcpu>
+  <resource>
+    <partition>/machine</partition>
+  </resource>
+  <os>
+    <type arch='x86_64' machine='pc-q35-4.1'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic eoi='on'/>
+    <pae/>
+  </features>
+  <cpu mode='host-passthrough' check='none'>
+    <topology sockets="2" cores="4" threads="1" />
+  </cpu>
+  <clock offset='utc'>
+    <timer name='rtc' tickpolicy='catchup' track='guest'/>
+    <timer name='hpet' present='no'/>
+    <timer name='pit' tickpolicy='delay'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source file='/var/lib/avocado/data/avocado-vt/images/openEuler-20.03-x86_64.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <controller type='usb' index='0' model='ehci'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x2'/>
+    </controller>
+    <controller type='usb' index='1' model='nec-xhci'>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='scsi' model='virtio-scsi' index='0'/>
+    <controller type='sata' index='0'>
+    </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='1' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='2' port='0x9'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='3' port='0xa'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='4' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='4' port='0xb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x3'/>
+    </controller>
+    <controller type='pci' index='5' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='5' port='0x30'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='6' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='6' port='0x31'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x1'/>
+    </controller>
+    <controller type='pci' index='7' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='7' port='0x32'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
+    </controller>
+    <controller type='pci' index='8' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='8' port='0x33'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x3'/>
+    </controller>
+    <controller type='pci' index='9' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='9' port='0x34'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x4'/>
+    </controller>
+    <controller type='pci' index='10' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='10' port='0x35'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x5'/>
+    </controller>
+    <controller type='pci' index='11' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='11' port='0xc'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x4'/>
+    </controller>
+    <controller type='pci' index='12' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='12' port='0xd'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x5'/>
+    </controller>
+    <controller type='pci' index='13' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='13' port='0xe'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x6'/>
+    </controller>
+    <controller type='pci' index='14' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='14' port='0xf'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x7'/>
+    </controller>
+    <controller type='pci' index='15' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='15' port='0x20'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='16' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='16' port='0x21'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x1'/>
+    </controller>
+    <controller type='pci' index='17' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='17' port='0x22'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x2'/>
+    </controller>
+    <controller type='pci' index='18' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='18' port='0x23'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x3'/>
+    </controller>
+    <controller type='pci' index='19' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='19' port='0x24'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x4'/>
+    </controller>
+    <controller type='pci' index='20' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='20' port='0x25'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x5'/>
+    </controller>
+    <controller type='pci' index='21' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='21' port='0x26'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x6'/>
+    </controller>
+    <controller type='pci' index='22' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='22' port='0x27'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x7'/>
+    </controller>
+    <controller type='pci' index='23' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='23' port='0x28'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='24' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='24' port='0x29'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x1'/>
+    </controller>
+    <controller type='pci' index='25' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='25' port='0x2a'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x2'/>
+    </controller>
+    <controller type='pci' index='26' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='26' port='0x2b'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x3'/>
+    </controller>
+    <controller type='pci' index='27' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='27' port='0x2c'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x4'/>
+    </controller>
+    <controller type='pci' index='28' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='28' port='0x2d'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x5'/>
+    </controller>
+    <controller type='pci' index='29' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='29' port='0x2e'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x6'/>
+    </controller>
+    <controller type='pci' index='30' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='30' port='0x2f'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x7'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </controller>
+    <interface type='bridge'>
+      <source bridge='virbr0'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/qemu/avocado-vt-vm1.agent'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
+    </channel>
+    <input type='tablet' bus='usb'>
+    </input>
+    <input type='keyboard' bus='usb'>
+    </input>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'>
+    </graphics>
+    <video>
+       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x1'/>
+    </video>
+    <memballoon model='virtio'>
+    </memballoon>
+  </devices>
+  <seclabel type='none' model='none'/>
+  <seclabel type='dynamic' model='dac' relabel='yes'/>
+</domain>
+
