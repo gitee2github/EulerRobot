@@ -1,0 +1,7 @@
+suite: openeuler_libvirt
+category: functional
+
+openEuler_libvirt:
+        repo_name: libvirt
+        repo_url: https://gitee.com/openeuler/libvirt.git
+        repo_branch: master
