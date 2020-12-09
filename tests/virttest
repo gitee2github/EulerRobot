@@ -19,128 +19,253 @@
 . $LKP_SRC/lib/env.sh
 . $LKP_SRC/lib/upload.sh
 
+images_aarch64=("openEuler-20.03-aarch64.qcow2" "openEuler-20.09-aarch64.qcow2")
+images_x86_64=("openEuler-20.03-x86_64.qcow2" "openEuler-20.09-x86_64.qcow2")
+file_server="${image_server}/initrd/qemu-image"
+images_path="/var/lib/avocado/data/avocado-vt/images/"
+
 set_up() {
-	iptables -F
+    iptables -F
 
-	if ! brctl show virbr0 > /dev/null; then
-		log_cmd systemctl restart libvirtd
-	fi
-	ps -fC qemu-img | grep qemu-img && log_cmd killall -9 qemu-img
-	log_cmd targetcli clearconfig confirm=True
+    if ! brctl show virbr0 > /dev/null; then
+        log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
+    fi
+    ps -fC qemu-img | grep qemu-img && log_cmd killall -9 qemu-img
+    log_cmd targetcli clearconfig confirm=True
 
-	# virttest qemu path
-	if ! ls /usr/bin/qemu-kvm > /dev/null; then
-		# upstream qemu path
-		if [ -e /usr/libexec/qemu-kvm ]; then
-			log_cmd ln -s /usr/libexec/qemu-kvm /usr/bin/qemu-kvm
-		fi
-	fi
+    # virttest qemu path
+    if ! ls /usr/bin/qemu-kvm > /dev/null; then
+        # upstream qemu path
+        if [ -e /usr/libexec/qemu-kvm ]; then
+            log_cmd ln -s /usr/libexec/qemu-kvm /usr/bin/qemu-kvm
+        fi
+    fi
 
-	if [ "$vt_type" = "libvirt" ]; then
-		local vt_xml=$LKP_SRC/virttest/avocado-vt-vm1-$os_arch.xml
-		if [ "$os_arch" = "aarch64" ]; then
-			case "$vt_guest_os" in
-				*openEuler.20.03) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-aarch64.qcow2/" $vt_xml ;;
-				*               ) log_cmd sed -i "s/[^/]*\.qcow2/f28-aarch64.qcow2/"             $vt_xml ;;
-			esac
+    if [ "$vt_type" = "libvirt" ]; then
+        local vt_xml=$LKP_SRC/virttest/avocado-vt-vm1-$arch.xml
+        if [ "$arch" = "aarch64" ]; then
+            case "$vt_guest_os" in
+                *openEuler.20.03) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-aarch64.qcow2/" $vt_xml ;;
+                *openEuler.20.09) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.09-aarch64.qcow2/" $vt_xml ;;
+                *               ) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-aarch64.qcow2/" $vt_xml ;;
+            esac
 
-			# upstream edk2 path
-			if [ ! -e /usr/share/edk2/aarch64/QEMU_EFI-pflash.raw ]; then
-				# Fedora/CentOS/Redhat edk (aavmf) path
-				if [ -e /usr/share/AAVMF/AAVMF_CODE.fd ]; then
-					log_cmd sed -i "s|/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw|/usr/share/AAVMF/AAVMF_CODE.fd|" $vt_xml
-				fi
-			fi
-		fi
-		log_cmd virsh define $vt_xml
-	fi
+            # upstream edk2 path
+            if [ ! -e /usr/share/edk2/aarch64/QEMU_EFI-pflash.raw ]; then
+                # Fedora/CentOS/Redhat edk (aavmf) path
+                if [ -e /usr/share/AAVMF/AAVMF_CODE.fd ]; then
+                    log_cmd sed -i "s|/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw|/usr/share/AAVMF/AAVMF_CODE.fd|" $vt_xml
+                fi
+            fi
+        fi
+        if [ "$arch" = "x86_64" ]; then
+            case "$vt_guest_os" in
+                *openEuler.20.03) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-x86_64.qcow2/" $vt_xml ;;
+                *openEuler.20.09) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.09-x86_64.qcow2/" $vt_xml ;;
+                *               ) log_cmd sed -i "s/[^/]*\.qcow2/openEuler-20.03-x86_64.qcow2/" $vt_xml ;;
+            esac
+        fi
+        log_cmd virsh define $vt_xml
+    fi
 }
 
 tear_down() {
-	local errno=$1
+    local errno=$1
 
-	# collect aexpect (eg: serial console) logs
-	ls -d /tmp/aexpect_* | while read aexpect; do
-		case "$(awk '$5=="command:"{print;exit}' $aexpect/server-log | sed "s/^.*command: *//")" in
-			ssh*          ) aexpect_errno=$errno; command=ssh i   ;;
-			scp*          ) aexpect_errno=$errno; command=scp     ;;
-			tshark*       ) aexpect_errno=0     ; command=tshark  ;;
-			tcpdump*      ) aexpect_errno=0     ; command=tcpdump ;;
-			virsh*console*) aexpect_errno=x     ; command=console ;;
-			*             ) aexpect_errno=0     ; command=others  ;;
-		esac
-		if [ "$errno" = "$aexpect_errno" ]; then
-			rm -rf "$aexpect"
-			continue
-		fi
-		date=$(ls -lrt --full-time "$aexpect" | awk 'NF>=9{print$6,$7,$8;exit}' | sed 's/^\(.\{19\}\).*$/\1/;s/[:-]//g;s/ /-/g')
-		ls "$aexpect" | while read file; do
-			if [ ! -s "$aexpect/$file" ]; then
-				rm -rf "$aexpect/$file"
-			fi
-		done
-		if ! mv "$aexpect" "$logs_dir/latest/sysinfo/post/aexpect-$command-$date-${aexpect##*_}"; then
-			rm -rf "$aexpect"
-		fi
-	done
+    # collect aexpect (eg: serial console) logs
+    ls -d /tmp/aexpect_* | while read aexpect; do
+        case "$(awk '$5=="command:"{print;exit}' $aexpect/server-log | sed "s/^.*command: *//")" in
+            ssh*          ) aexpect_errno=$errno; command=ssh     ;;
+            scp*          ) aexpect_errno=$errno; command=scp     ;;
+            tshark*       ) aexpect_errno=0     ; command=tshark  ;;
+            tcpdump*      ) aexpect_errno=0     ; command=tcpdump ;;
+            virsh*console*) aexpect_errno=x     ; command=console ;;
+            *             ) aexpect_errno=0     ; command=others  ;;
+        esac
+        if [ "$errno" = "$aexpect_errno" ]; then
+            rm -rf "$aexpect"
+            continue
+        fi
+        date=$(ls -lrt --full-time "$aexpect" | awk 'NF>=9{print$6,$7,$8;exit}' | sed 's/^\(.\{19\}\).*$/\1/;s/[:-]//g;s/ /-/g')
+        ls "$aexpect" | while read file; do
+            if [ ! -s "$aexpect/$file" ]; then
+                rm -rf "$aexpect/$file"
+            fi
+        done
+        if ! mv "$aexpect" "$logs_dir/latest/sysinfo/post/aexpect-$command-$date-${aexpect##*_}"; then
+            rm -rf "$aexpect"
+        fi
+    done
 
-	if [ "$errno" != "0" ]; then
-		ps -fC qemu-img qemu-kvm aexpect-helper && killall qemu-img qemu-kvm aexpect-helper
-		local pids=$(ps -ef | awk '$8!="awk"&&/avocado.*run/{print$2}')
-		sleep 1
-		killall -9 qemu-img qemu-kvm aexpect-helper
-		[ -n "$pids" ] && kill -9 $pids
+    if [ "$errno" != "0" ]; then
+        ps -fC qemu-img qemu-kvm aexpect-helper && killall qemu-img qemu-kvm aexpect-helper
+        local pids=$(ps -ef | awk '$8!="awk"&&/avocado.*run/{print$2}')
+        sleep 1
+        killall -9 qemu-img qemu-kvm aexpect-helper
+        [ -n "$pids" ] && kill -9 $pids
 
-		ps aux > "$logs_dir/latest/sysinfo/post/ps_aux"
-		ps -e f > "$logs_dir/latest/sysinfo/post/ps-e_f"
-		rpm -qa | sort > "$logs_dir/latest/sysinfo/post/rpm-qa"
-		tail -n 2048 /var/log/messages > "$logs_dir/latest/sysinfo/post/tail_n_2048_var_log_messages"
-		tar -zcvf "$logs_dir/latest/sysinfo/post/var_log_libvirt.tar.gz" /var/log/libvirt
-	fi
+        ps aux > "$logs_dir/latest/sysinfo/post/ps_aux"
+        ps -e f > "$logs_dir/latest/sysinfo/post/ps-e_f"
+        rpm -qa | sort > "$logs_dir/latest/sysinfo/post/rpm-qa"
+        tail -n 2048 /var/log/messages > "$logs_dir/latest/sysinfo/post/tail_n_2048_var_log_messages"
+        tar -zcvf "$logs_dir/latest/sysinfo/post/var_log_libvirt.tar.gz" /var/log/libvirt
+    fi
 
-	if [ "$vt_type" = "libvirt" ]; then
-		virsh list --all | awk '/shut off$/{print$2}' | while read vm; do
-			if ! log_cmd virsh undefine $vm --nvram; then
-				log_cmd virsh undefine $vm
-			fi
-		done
-	fi
+    if [ "$vt_type" = "libvirt" ]; then
+        virsh list --all | awk '/shut off$/{print$2}' | while read vm; do
+            if ! log_cmd virsh undefine $vm --nvram; then
+                log_cmd virsh undefine $vm
+            fi
+        done
+    fi
 
-	return $errno
+    return $errno
+}
+
+images_download() {
+    if [ "$arch" = "aarch64" ];then
+            images=${images_aarch64[@]}
+    else
+            images=${images_x86_64[@]}
+    fi
+
+    for image in ${images[@]};do
+            if [ ! -f $images_path/$image.succ ]; then
+                wget $file_server/$image -O $images_path/$image
+                wget $file_server/$image.succ -O $images_path/$image.succ
+            else
+                wget $file_server/$image.succ -O $images_path/tmp.succ
+                diff $images_path/tmp.succ $images_path/$image.succ
+                if [ $? -ne 0 ]; then
+                    wget $file_server/$image -O $images_path/$image
+                    wget $file_server/$image.succ -O $images_path/$image.succ
+                fi
+            fi
+    done
 }
 
 run_test() {
-	(
-	set_up
-	# used to collect aexpect (eg: serial console) logs
-	export AEXPECT_DEBUG=on
-	log_cmd "$@"
-	tear_down $?
-	return $?
-	)
+    (
+    set_up
+    # used to collect aexpect (eg: serial console) logs
+    export AEXPECT_DEBUG=on
+    log_cmd "$@"
+    tear_down $?
+    return $?
+    )
 }
+
+libvirt_base_cfg=/var/lib/avocado/data/avocado-vt/backends/libvirt/cfg/base.cfg
+config_virttest() {
+    local_ip=$1
+    remote_ip=$2
+    local_pwd=$3
+    local_dir=$images_path
+    remote_dir=/Images/virt-test/remote_dir
+    export_options="rw,sync,no_root_squash"
+    mkdir -p $remote_dir
+
+    cp -a $libvirt_base_cfg $libvirt_base_cfg.bak_by_CI
+
+    [ -f /root/.ssh/id_rsa ] && log_cmd rm -rf /root/.ssh/id_rsa*
+    
+    sed -i "/^# storage_type=/i firewall_to_permit_nfs = no" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i storage_type = nfs" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i setup_remote_nfs = yes" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i setup_local_nfs = yes" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_server_ip = \"$local_ip\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i server_ip = \"$local_ip\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i client_ip = \"$remote_ip\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_client_ip = \"$remote_ip\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_server_pwd = \"$local_pwd\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_client_pwd = \"$local_pwd\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_mount_dir = \"$remote_dir\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i nfs_mount_src = \"$local_dir\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i export_options = \"$export_options\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i export_dir = \"$local_dir\"" $libvirt_base_cfg
+    sed -i "/^# storage_type =/i remote_nfs_mount = yes" $libvirt_base_cfg
+
+    sed -i "/^local_ip =/c local_ip = \"$local_ip\"" $libvirt_base_cfg
+    sed -i "/^local_pwd =/c local_pwd = \"$local_pwd\"" $libvirt_base_cfg
+    sed -i "/^remote_ip =/c remote_ip = \"$remote_ip\"" $libvirt_base_cfg
+    sed -i "/^migrateion_setup =/c migration_setup = \"yes\"" $libvirt_base_cfg
+
+    sed -i 's/^migrate_source_host = ENTER.YOUR.SOURCE.EXAMPLE.COM/# &/' $libvirt_base_cfg
+    sed -i 's/^migrate_source_pwd = PASSWORD.SOURCE.EXAMPLE/# &/' $libvirt_base_cfg
+    sed -i 's/^# \(migrate_source_host = "${local_ip}"\)/\1/' $libvirt_base_cfg
+    sed -i 's/^# \(migrate_source_pwd = "${local_pwd}"\)/\1/' $libvirt_base_cfg
+
+    sed -i 's/^migrate_dest_host = ENTER.YOUR.DEST.EXAMPLE.COM/# &/' $libvirt_base_cfg
+    sed -i 's/^migrate_dest_pwd = PASSWORD.DEST.EXAMPLE/# &/' $libvirt_base_cfg
+    sed -i 's/^# \(migrate_dest_host = "${remote_ip}"\)/\1/' $libvirt_base_cfg
+    sed -i 's/^# \(migrate_dest_pwd = "${remote_pwd}"\)/\1/' $libvirt_base_cfg
+}
+
+# config bash prompt. The shell prompt that indicates a successfull login 
+bash_prompt="/root/.shell/bash_prompt"
+if [ -f $bash_prompt -a ! -e $bash_prompt.bak_by_CI ]; then
+    cp -a $bash_prompt $bash_prompt.bak_by_CI
+    sed -i '/^PS1=/c PS1=\"[\\u@\\h \\W]# \"' $bash_prompt
+    source  $bash_prompt
+fi
+
+# config umask
+if [ ! -e /etc/bashrc.bak_by_CI ]; then
+    cp -a /etc/bashrc /etc/bashrc.bak_by_CI
+    sed -i '/^umask /c umask 0022' /etc/bashrc
+
+    # service unmask
+    log_cmd systemctl restart nfs ||systemctl unmask network.target
+    log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
+
+    # config dns
+    [ -z "$dns_address" ] || echo "nameserver $dns_address" >> /etc/resolv.conf
+
+fi
+
+# config qemu
+if [ ! -e /etc/libvirt/qemu.conf.bak_by_CI ];then
+    on
+    sed -i 's/^#user/user/;s/^#group/group/' /etc/libvirt/qemu.conf
+fi
+
+# avocado-vt requirements check
+pip3 list | grep simplejson || pip3 install simplejson
+pip3 list | grep psutil || pip3 install psutil
+pip3 list | grep netifaces || pip3 install netifaces
+
+if [ $vt_reference == "remote_deploy" ]; then
+        exit
+fi
+
+# config virttest for 2hosts
+pwd=${node_pwd:-Helloman@12#$}
+[ -z  "$env_type" ] || env_type = ""
+if [ x$env_type == x"2hosts" -a ! -e $libvirt_base_cfg.bak_by_CI ];then
+    config_virttest $server $client $pwd
+fi
 
 conf_file=$(find /usr/local/lib/ -name "avocado.conf")
 [ -e "$conf_file" ] || die "Missing config file avocado.conf"
 
-logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s/^~/|$(cd ~; pwd)/|")
+logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s#^~#$(cd ~; pwd)#")
 [ -z "$logs_dir" ] && die "Not found logs_dir in avocado.conf"
 
-if [ "$os_arch" = "aarch64" ]; then
-	[ "$vt_machine_type" = "q35" ] && die "$os_arch vt_machine_type=$vt_machine_type"
+if [ "$arch" = "aarch64" ]; then
+    [ "$vt_machine_type" = "q35" ] && die "$arch vt_machine_type=$vt_machine_type"
 else
-	[ "$vt_machine_type" = "arm64-pci" ] && die "$os_arch vt_machine_type=$vt_machine_type"
+    [ "$vt_machine_type" = "arm64-pci" ] && die "$arch vt_machine_type=$vt_machine_type"
 fi
 
 [ -z "$vt_name" ] && vt_name=$vt_reference
 [ -z "$vt_type" ] && vt_type="libvirt"
-[ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.Fedora.28"
+[ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.openEuler.20.03"
 [ -z "$vt_machine_type" ] &&
-	if [ "$os_arch" = "aarch64" ]; then
-		vt_machine_type="arm64-pci"
-	else
-		vt_machine_type="q35"
-	fi
+    if [ "$arch" = "aarch64" ]; then
+        vt_machine_type="arm64-pci"
+    else
+        vt_machine_type="q35"
+    fi
 [ -z "$job_timeout" ] && job_timeout=600
 
 base_params=(--vt-type "$vt_type")
@@ -156,19 +281,26 @@ vt_tests=$(avocado list "${vt_reference:?}" "${base_params[@]}" "${extra_params[
 
 vt_tests=$(echo "$vt_tests" | awk '{print$2}')
 for _no_filter in $no_filter; do
-	vt_tests=$(echo "$vt_tests" | grep -Ev "$_no_filter") || break
+    vt_tests=$(echo "$vt_tests" | grep -Ev "$_no_filter") || break
 done
 for _only_filter in $only_filter; do
-	vt_tests=$(echo "$vt_tests" | grep -E "$_only_filter") || break
+    vt_tests=$(echo "$vt_tests" | grep -E "$_only_filter") || break
 done
 [ -z "$vt_tests" ] && die "Not found tests: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
 
 ok=0
 all=0
+
+# image file system config
+mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
+
+# download images
+images_download
+
 for vt_test in $vt_tests; do
-	run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
-	[ $? -eq 0 ] && ((ok++))
-	((all++))
+    run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
+    [ $? -eq 0 ] && ((ok++))
+    ((all++))
 done
 
 echo "$vt_name.result.ok: $ok"
@@ -177,6 +309,3 @@ echo "$vt_name.result.rate: $(($ok*100/$all))"
 
 upload_files -t results "${logs_dir:?}/"*
 rm -rf "${logs_dir:?}/"*
-
-[ $ok -eq $all ]
-exit $?

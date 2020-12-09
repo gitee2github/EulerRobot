@@ -3,46 +3,73 @@ pkgver=git
 pkgrel=1
 arch=('i386' 'x86_64' 'aarch64')
 url="https://gitee.com/openeuler/avocado-vt"
-license=('GPL' 'GPL' 'GPL' 'GPL')
-source=("https://gitee.com/openeuler/avocado.git" "https://gitee.com/openeuler/avocado-vt.git" "https://gitee.com/openeuler/tp-qemu.git" "https://gitee.com/openeuler/tp-libvirt.git")
-md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+license=('GPL' 'GPL' 'GPL' 'GPL' 'GPL')
+source=("https://gitee.com/openeuler/avocado.git" "https://gitee.com/openeuler/avocado-vt.git" "https://gitee.com/openeuler/tp-qemu.git" "https://gitee.com/openeuler/tp-libvirt.git" "https://gitee.com/openeuler/EulerRobot.git")
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP') 
 
 install_virttest() {
-	local branch=$1
+    local branch=$1
 
-	cd "$srcdir/tp-qemu"
-	git checkout -f "$branch"
+    cd "$srcdir/tp-qemu"
+    git checkout -f "$branch"
 
-	cd "$srcdir/tp-libvirt"
-	git checkout -f "$branch"
+    cd "$srcdir/tp-libvirt"
+    git checkout -f "$branch"
 
-	cd "$srcdir/avocado"
-	git checkout -f "$branch"
-	sed -i "s/^libvirt-python/#&/" requirements-selftests.txt
-	pip3 install -r requirements-selftests.txt
-	python3 setup.py install
+    cd "$srcdir/avocado"
+    git checkout -f "$branch"
+    sed -i "s/^libvirt-python/#&/" requirements-selftests.txt
+    pip3 install -r requirements-selftests.txt
+    python3 setup.py install
 
-	cd "$srcdir/avocado-vt"
-	git checkout -f "$branch"
-	sed -i "/^branch: /d" test-providers.d/io-github-autotest-qemu.ini
-	sed -i "/^uri: /c uri: $srcdir/tp-qemu" test-providers.d/io-github-autotest-qemu.ini
-	sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-qemu.ini
-	sed -i "/^branch: /d" test-providers.d/io-github-autotest-libvirt.ini
-	sed -i "/^uri: /c uri: $srcdir/tp-libvirt" test-providers.d/io-github-autotest-libvirt.ini
-	sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-libvirt.ini
-	rm -f test-providers.d/io-github-spiceqa-spice.ini
-	pip3 install -r requirements.txt
-	python3 setup.py install
+    cd "$srcdir/avocado-vt"
+    git checkout -f "$branch"
+    sed -i "/^branch: /d" test-providers.d/io-github-autotest-qemu.ini
+    sed -i "/^uri: /c uri: $srcdir/tp-qemu" test-providers.d/io-github-autotest-qemu.ini
+    sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-qemu.ini
+    sed -i "/^branch: /d" test-providers.d/io-github-autotest-libvirt.ini
+    sed -i "/^uri: /c uri: $srcdir/tp-libvirt" test-providers.d/io-github-autotest-libvirt.ini
+    sed -i "/^uri: /a branch: $branch" test-providers.d/io-github-autotest-libvirt.ini
+    rm -f test-providers.d/io-github-spiceqa-spice.ini
+    pip3 install -r requirements.txt
+    python3 setup.py install
 
-	avocado vt-bootstrap --vt-type qemu --vt-skip-verify-download-assets --yes-to-all
-	avocado vt-bootstrap --vt-type libvirt --vt-skip-verify-download-assets --yes-to-all
+    avocado vt-bootstrap --vt-type qemu --vt-skip-verify-download-assets --yes-to-all
+    avocado vt-bootstrap --vt-type libvirt --vt-skip-verify-download-assets --yes-to-all
 }
 
 build() {
-	install_virttest "openEuler-20.03"
+    install_virttest "openEuler-20.03"
+}
+
+avocado_copy() {
+    mkdir -p "${pkgdir}/lkp/benchmarks"
+    cp -rf "/usr/local/bin/avocado" "${pkgdir}/lkp/benchmarks"
+    mkdir -p "${pkgdir}/usr/local/bin/"
+    cp -rf "/usr/local/bin/"* "${pkgdir}/usr/local/bin/"
+    mkdir -p "${pkgdir}/usr/local/lib"
+    cp -rf "/usr/local/lib/"* "${pkgdir}/usr/local/lib/"
+    mkdir -p "${pkgdir}/usr/share/"
+    cp -rf "/usr/share/avocado-plugins-vt" "${pkgdir}/usr/share/"
+    mkdir -p "${pkgdir}/var/lib/avocado"
+    cp -rf "/var/lib/avocado/"* "${pkgdir}/var/lib/avocado/"
+    mkdir -p "{$pkgdir}/root/avocado/job-results/"
+}
+
+lkp_virttest_copy() {
+    mkdir -p "${pkgdir}/${LKP_SRC}/distro/depends"
+    cp -rf "${srcdir}/EulerRobot/distro/depends/"* "${pkgdir}/${LKP_SRC}/distro/depends/"
+    mkdir -p "${pkgdir}/${LKP_SRC}/pkg/virttest"
+    cp -rf "${srcdir}/EulerRobot/pkg/virttest"* "${pkgdir}/${LKP_SRC}/pkg/virttest/"
+    mkdir -p "${pkgdir}/${LKP_SRC}/stats"
+    cp -rf "${srcdir}/EulerRobot/stats/"* "${pkgdir}/${LKP_SRC}/stats/"
+    mkdir -p "${pkgdir}/${LKP_SRC}/tests"
+    cp -rf "${srcdir}/EulerRobot/tests/"* "${pkgdir}/${LKP_SRC}/tests/"
+    mkdir -p "${pkgdir}/${LKP_SRC}/virttest"
+    cp -rf "${srcdir}/EulerRobot/config/vmxml/"* "${pkgdir}/${LKP_SRC}/virttest/"
 }
 
 package() {
-	mkdir -p "${pkgdir}/lkp/benchmarks"
-	cp -f "/usr/local/bin/avocado" "${pkgdir}/lkp/benchmarks"
+    lkp_virttest_copy
+    avocado_copy
 }

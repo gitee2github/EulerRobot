@@ -1,0 +1,52 @@
+suite: virttest
+testcase: virttest
+category: functional
+
+image_server: http://172.168.131.2:11300
+env_type: 2hosts
+
+if role server:
+  virttest-22:
+    vt_reference:
+    - virsh.start
+    vt_name: virsh_remote_start
+    vt_type: libvirt
+    vt_only_filter: remote_start
+    vt_env_type: 2hosts
+  
+  virttest-95:
+    vt_reference:
+    - virsh.migrate
+    vt_type: libvirt
+    vt_no_filter: with_cpu_hotplug,with_mem_hotplug,preferred_memory_mode,from_kunpeng,with_HP,with_HP_pin,with_HP_only
+    vt_env_type: 2hosts
+  
+  virttest-96:
+    vt_reference:
+    - virsh.migrate
+    vt_name: virsh.migrate_from_kunpeng
+    vt_type: libvirt
+    vt_no_filter: with_cpu_hotplug,with_mem_hotplug,preferred_memory_mode
+    vt_only_filter: from_kunpeng,with_HP,with_HP_pin,with_HP_only
+    vt_env_type: 2kunpeng
+  
+  virttest-97:
+    vt_reference:
+    - virsh.migrate_options_shared
+    vt_type: libvirt
+    vt_no_filter: set_minus,with_postcopy,set_max,tunnelled_migration
+    vt_only_filter: multifd
+    vt_env_type: 2hosts
+  
+  virttest-150:
+    vt_reference:
+    - virsh.domjobabort
+    vt_name: virsh.domjobabort.migrate
+    vt_type: libvirt
+    vt_only_filter: migrate_option
+    vt_env_type: 2hosts
+
+if role client:
+  virttest-00:
+    vt_reference:
+    - remote_deploy
