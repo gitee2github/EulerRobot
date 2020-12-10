@@ -413,9 +413,63 @@ virttest-70:
   vt_type: libvirt
   vt_no_filter: kvmclock,hpet
 
-virttest-71:
+virttest-71-1:
   vt_reference:
-  - virsh.attach_device
+  - virsh.attach_device.block.multi_virtio_file
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-2:
+  vt_reference:
+  - virsh.attach_device.block.sigle_file
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-3:
+  vt_reference:
+  - virsh.attach_device.block.single_scsi_file
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-4:
+  vt_reference:
+  - virsh.attach_device.single_usb_file
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-5:
+  vt_reference:
+  - virsh.attach_device.single_virtio_file
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-6:
+  vt_reference:
+  - virsh.attach_device.character.channel
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-7:
+  vt_reference:
+  - virsh.attach_device.character.console
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8:
+  vt_reference:
+  - virsh.attach_device.character.serial
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-9:
+  vt_reference:
+  - virsh.attach_device.controller.type_scsi
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-10:
+  vt_reference:
+  - virsh.attach_device.multiple
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
