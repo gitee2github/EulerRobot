@@ -292,7 +292,12 @@ ok=0
 all=0
 
 # image file system config
-mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
+if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
+    mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
+    rm -rf ${images_path:?}/tmp
+    mkdir -p ${images_path}/tmp
+    mount --bind ${images_path}/tmp /var/tmp
+fi
 
 # download images
 images_download
