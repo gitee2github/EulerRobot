@@ -60,6 +60,7 @@ depends_install() {
         usbredir-devel \
         virglrenderer-devel \
         zlib-devel \
+        libasan \
         --downloadonly --downloaddir=./qemu_depends
     sudo rpm -ivh --force --nodeps ./qemu_depends/*.rpm
 }
@@ -84,6 +85,12 @@ build() {
         disable_bluez="--disable-bluez"
     else
         disable_bluez=""
+    fi
+
+    if [ x$san == x"enable" ];then
+        enable_san="--enable-sanitizers"
+    else
+        enable_san=""
     fi
 
     ../configure \
@@ -128,6 +135,7 @@ build() {
         --disable-sheepdog \
         --disable-capstone \
         --disable-smartcard \
+        ${enable_san} \
         || (cat config.log; exit 1)
 
     make -j $(getconf _NPROCESSORS_ONLN) VL_LDFLAGS=-Wl,--build-id V=1
