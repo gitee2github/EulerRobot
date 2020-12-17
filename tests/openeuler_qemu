@@ -96,7 +96,7 @@ build() {
     ../configure \
         --prefix=/usr \
         ${target_list} \
-        '--extra-cflags=-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/openEuler/openEuler-hardened-cc1 -fasynchronous-unwind-tables -fstack-clash-protection -fPIE -DPIE -fPIC' \
+        '--extra-cflags=-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/openEuler/openEuler-hardened-cc1 -fasynchronous-unwind-tables -fstack-clash-protection -fPIE -DPIE -fPIC -Wno-error' \
         '--extra-ldflags=-Wl,--build-id -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack' \
         --datadir=/usr/share \
         --docdir=/usr/share/doc/qemu \
