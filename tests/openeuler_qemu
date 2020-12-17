@@ -68,7 +68,7 @@ depends_install() {
 build() {
     git clone $repo_url
     cd $repo_name
-    git checkout -f $branch
+    git checkout -f $repo_branch
     git submodule update --init ui/keycodemapdb
 
     if [ "$arch" = "aarch64" ]; then 
