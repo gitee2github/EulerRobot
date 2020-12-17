@@ -2,6 +2,7 @@ suite: openeuler_qemu
 category: functional
 
 openEuler_qemu:
-        repo_name: qemu
-        repo_url: https://gitee.com/openeuler/qemu.git
-        repo_branch: master
+    repo_name: qemu
+    repo_url: https://gitee.com/openeuler/qemu.git
+    repo_branch: master
+    san: enable
