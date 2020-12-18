@@ -18,6 +18,7 @@
 . $LKP_SRC/lib/debug.sh
 . $LKP_SRC/lib/env.sh
 . $LKP_SRC/lib/upload.sh
+. $LKP_SRC/lib/job.sh
 
 images_aarch64=("openEuler-20.03-aarch64.qcow2" "openEuler-20.09-aarch64.qcow2")
 images_x86_64=("openEuler-20.03-x86_64.qcow2" "openEuler-20.09-x86_64.qcow2")
@@ -314,3 +315,5 @@ echo "$vt_name.result.rate: $(($ok*100/$all))"
 
 upload_files -t results "${logs_dir:?}/"*
 rm -rf "${logs_dir:?}/"*
+
+run_target_stats $(basename $0)
