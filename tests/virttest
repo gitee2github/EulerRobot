@@ -226,7 +226,7 @@ fi
 
 # config qemu
 if [ ! -e /etc/libvirt/qemu.conf.bak_by_CI ];then
-    on
+    cp /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.bak_by_CI
     sed -i 's/^#user/user/;s/^#group/group/' /etc/libvirt/qemu.conf
 fi
 
