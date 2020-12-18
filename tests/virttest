@@ -236,7 +236,7 @@ pip3 list | grep psutil || pip3 install psutil
 pip3 list | grep netifaces || pip3 install netifaces
 
 if [ $vt_reference == "remote_deploy" ]; then
-        exit
+    exit 0
 fi
 
 # config virttest for 2hosts
