@@ -11,8 +11,10 @@
 [ -n "$repo_url" ] || die "repo_url is empty"
 [ -n "$repo_branch" ] || die "repo_branch is empty"
 
+workdir=$(pwd)
+
 depends_install() {
-    mkdir ./qemu_depends/
+    mkdir ${workdir}/qemu_depends/
     sudo yum install -y \
         gcc \
         git \
@@ -61,11 +63,12 @@ depends_install() {
         virglrenderer-devel \
         zlib-devel \
         libasan \
-        --downloadonly --downloaddir=./qemu_depends
-    sudo rpm -ivh --force --nodeps ./qemu_depends/*.rpm
+        --downloadonly --downloaddir=${workdir}/qemu_depends
+    sudo rpm -ivh --force --nodeps ${workdir}/qemu_depends/*.rpm
 }
 
 build() {
+    cd ${workdir}
     git clone $repo_url
     cd $repo_name
     git checkout -f $repo_branch
@@ -144,5 +147,21 @@ build() {
     make check V=1
 }
 
+cppcheck() {
+    cd ${workdir}
+    cppcheck_repo="https://gitee.com/mirrors/cppcheck.git"
+    cppcheck_options=${cppcheck_option:-"--inconclusive --xml --xml-version=2 CSLB"}
+    git clone $cppcheck_repo
+    cd cppcheck
+    make -j 60 CFGDIR=/usr/local/cppcheck/cfg FILESDIR=/usr/share/cppcheck
+    make install FILESDIR=/usr/share/cppcheck
+    cppcheck -j 60 ${workdir}/${repo_name} $cppcheck_options 2> ${workdir}/cppcheck.xml
+
+    upload_files -t results ${workdir}/cppcheck.xml
+}
+
 depends_install
 build
+if [ x$cppcheck == x"enable" ]; then
+    cppcheck
+fi
