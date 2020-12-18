@@ -60,6 +60,7 @@ depends_install() {
         usbredir-devel \
         virglrenderer-devel \
         zlib-devel \
+        libasan \
         --downloadonly --downloaddir=./qemu_depends
     sudo rpm -ivh --force --nodeps ./qemu_depends/*.rpm
 }
@@ -67,7 +68,7 @@ depends_install() {
 build() {
     git clone $repo_url
     cd $repo_name
-    git checkout -f $branch
+    git checkout -f $repo_branch
     git submodule update --init ui/keycodemapdb
 
     if [ "$arch" = "aarch64" ]; then 
@@ -86,10 +87,18 @@ build() {
         disable_bluez=""
     fi
 
+    if [ x$san == x"enable" ];then
+        enable_san="--enable-sanitizers"
+        concurrency=60
+    else
+        enable_san=""
+        concurrency=$(getconf _NPROCESSORS_ONLN)
+    fi
+
     ../configure \
         --prefix=/usr \
         ${target_list} \
-        '--extra-cflags=-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/openEuler/openEuler-hardened-cc1 -fasynchronous-unwind-tables -fstack-clash-protection -fPIE -DPIE -fPIC' \
+        '--extra-cflags=-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/openEuler/openEuler-hardened-cc1 -fasynchronous-unwind-tables -fstack-clash-protection -fPIE -DPIE -fPIC -Wno-error' \
         '--extra-ldflags=-Wl,--build-id -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack' \
         --datadir=/usr/share \
         --docdir=/usr/share/doc/qemu \
@@ -128,9 +137,10 @@ build() {
         --disable-sheepdog \
         --disable-capstone \
         --disable-smartcard \
+        ${enable_san} \
         || (cat config.log; exit 1)
 
-    make -j $(getconf _NPROCESSORS_ONLN) VL_LDFLAGS=-Wl,--build-id V=1
+    make -j ${concurrency} VL_LDFLAGS=-Wl,--build-id V=1
     make check V=1
 }
 
