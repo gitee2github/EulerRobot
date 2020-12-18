@@ -1,5 +1,8 @@
 suite: cci-makepkg
 category: functional
 
+# if you need to run integration tests on qemu_san version, enable it in makepkg
+#qemu_san: enable
+
 cci-makepkg:
-        benchmark: virttest
+    benchmark: virttest

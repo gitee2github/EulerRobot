@@ -7,6 +7,12 @@ license=('GPL' 'GPL' 'GPL' 'GPL' 'GPL')
 source=("https://gitee.com/openeuler/avocado.git" "https://gitee.com/openeuler/avocado-vt.git" "https://gitee.com/openeuler/tp-qemu.git" "https://gitee.com/openeuler/tp-libvirt.git" "https://gitee.com/openeuler/EulerRobot.git")
 md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP') 
 
+if [ x$qemu_san == x"enable" ]; then
+    source=(${source[*]} "https://gitee.com/src-openeuler/qemu.git")
+    license=(${license[*]} 'GPL')
+    md5sums=(${md5sums[*]} 'SKIP')
+fi
+
 install_virttest() {
     local branch=$1
 
@@ -38,8 +44,31 @@ install_virttest() {
     avocado vt-bootstrap --vt-type libvirt --vt-skip-verify-download-assets --yes-to-all
 }
 
+qemu_asan_build() {
+    rpm_source_dir="/root/rpmbuild/SOURCES"
+
+    if ! rpm -q rpm-build > /dev/null 2>&1; then
+            yum install -y rpm-build || exit $?
+    fi
+    [ -d $rpm_source_dir ] && rm -rf $rpm_source_dir
+    mkdir -p $rpm_source_dir
+    cp -a ${srcdir}/qemu/* $rpm_source_dir
+    qemu_spec=${srcdir}/qemu/qemu.spec
+    sed -i '/--python=/a \    --enable-sanitizers \\' ${qemu_spec}
+    sed -i 's/^make check/# &/' ${qemu_spec}
+    sed -i 's/^make %{_smp_mflags} \$buildldflags/make -j 60 \$buildldflags/' ${qemu_spec}
+
+    sed -i 's/^%__check_files/# &/' /usr/lib/rpm/macros
+
+    yum builddep -y ${qemu_spec} || exit $?
+    rpmbuild -ba ${qemu_spec} || exit $?
+}
+
 build() {
     install_virttest "openEuler-20.03"
+    if [ x$qemu_san == x"enable" ]; then
+        qemu_asan_build
+    fi
 }
 
 avocado_copy() {
@@ -69,7 +98,16 @@ lkp_virttest_copy() {
     cp -rf "${srcdir}/EulerRobot/config/vmxml/"* "${pkgdir}/${LKP_SRC}/virttest/"
 }
 
+san_rpm_copy() {
+    mkdir -p "${pkgdir}/virttest_san_rpm/"
+    cp -rf "/root/rpmbuild/RPMS/aarch64/"* "${pkgdir}/virttest_san_rpm/"
+    cp -rf "/root/rpmbuild/RPMS/noarch/"* "${pkgdir}/virttest_san_rpm/"
+}
+
 package() {
     lkp_virttest_copy
     avocado_copy
+    if [ x$qemu_san == x"enable" ]; then
+        san_rpm_copy
+    fi
 }
