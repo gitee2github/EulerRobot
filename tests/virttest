@@ -313,7 +313,9 @@ echo "$vt_name.result.ok: $ok"
 echo "$vt_name.result.all: $all"
 echo "$vt_name.result.rate: $(($ok*100/$all))"
 
-upload_files -t results "${logs_dir:?}/"*
-rm -rf "${logs_dir:?}/"*
+mkdir /home/$vt_reference
+mv ${logs_dir}/* /home/$vt_reference
+upload_files -t results /home/$vt_reference
+rm -rf /home/${vt_reference:?}
 
 run_target_stats $(basename $0)
