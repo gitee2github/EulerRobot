@@ -6,3 +6,7 @@ openEuler_qemu:
     repo_url: https://gitee.com/openeuler/qemu.git
     repo_branch: master
     san: enable
+    cppcheck: enable
+    # The cppcheck options can be customized with cppcheck_option, default value is 
+    # "--inconclusive --xml --xml-version=2 CSLB"
+    cppcheck_option: "--inconclusive --xml --xml-version=2 CSLB"
