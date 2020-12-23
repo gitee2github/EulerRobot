@@ -292,13 +292,21 @@ done
 ok=0
 all=0
 
+# config tmp dir
+config_tmpdir() {
+    umount /var/tmp > /dev/null  2>&1
+    rm -rf ${images_path:?}/tmp
+    mkdir -p ${images_path}/tmp
+    [ -d /var/tmp ] || mkdir -p /var/tmp
+    export TMP="/var/tmp"
+    mount --bind ${images_path}/tmp /var/tmp
+}
+
 # image file system config
 if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
     mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
-    rm -rf ${images_path:?}/tmp
-    mkdir -p ${images_path}/tmp
-    mount --bind ${images_path}/tmp /var/tmp
 fi
+config_tmpdir
 
 # download images
 images_download
