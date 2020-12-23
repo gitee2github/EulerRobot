@@ -1,8 +1,14 @@
 suite: cci-makepkg
 category: functional
 
-# if you need to run integration tests on qemu_san version, enable it in makepkg
+# If you need to run integration tests on qemu_san version, enable it in makepkg,
+# No set, it gets disable
 #qemu_san: enable
+ 
+# You can checkout specified branch by setting qemu_san_branch. No set, it gets master. 
+# Value range is the branch of https://gitee.com/src-openeuler/qemu.git.
+# Takes effect when qemu_san is enable
+#qemu_san_branch: master 
 
 cci-makepkg:
     benchmark: virttest

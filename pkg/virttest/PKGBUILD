@@ -52,6 +52,7 @@ qemu_asan_build() {
     fi
     [ -d $rpm_source_dir ] && rm -rf $rpm_source_dir
     mkdir -p $rpm_source_dir
+    [ ! -z "$qemu_san_branch" ] && cd ${srcdir}/qemu/ && git checkout -f $qemu_san_branch
     cp -a ${srcdir}/qemu/* $rpm_source_dir
     qemu_spec=${srcdir}/qemu/qemu.spec
     sed -i '/--python=/a \    --enable-sanitizers \\' ${qemu_spec}
