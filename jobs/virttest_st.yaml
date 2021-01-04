@@ -402,10 +402,18 @@ virttest-68:
   - virsh.attach_detach_disk_matrix
   vt_type: libvirt
 
-virttest-69:
+virttest-69-1:
   vt_reference:
   - virsh.attach_detach_interface
   vt_type: libvirt
+  vt_no_filter: domid
+
+virttest-69-2:
+  vt_reference:
+  - virsh.attach_detach_interface
+  vt_type: libvirt
+  vt_only_filter: domid
+  vt_guest_os: Guest.Linux.openEuler.20.09
 
 virttest-70:
   vt_reference:
