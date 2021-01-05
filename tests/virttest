@@ -26,6 +26,9 @@ file_server="${image_server}/initrd/qemu-image"
 images_path="/var/lib/avocado/data/avocado-vt/images/"
 images_partition="/dev/sda"
 
+default_dns_address="223.5.5.5"    # The default DNS address for compass-ci
+dns_address=${dns_address:-$default_dns_address}
+
 set_up() {
     iptables -F
 
@@ -221,8 +224,9 @@ if [ ! -e /etc/bashrc.bak_by_CI ]; then
     log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
 
     # config dns
-    [ -z "$dns_address" ] || echo "nameserver $dns_address" >> /etc/resolv.conf
-
+    if [ ! -f /etc/resolv.conf ]; then
+        echo "nameserver $dns_address" >> /etc/resolv.conf
+    fi
 fi
 
 # config qemu
