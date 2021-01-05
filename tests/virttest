@@ -202,6 +202,24 @@ config_virttest() {
     sed -i 's/^# \(migrate_dest_pwd = "${remote_pwd}"\)/\1/' $libvirt_base_cfg
 }
 
+# config qemu san
+config_qemu_san() {
+    if [ x$qemu_san == x"enable" ] && [ ! -d /virttest_san_rpm_bak ]; then
+        [ -d /virttest_san_rpm ] || die "Makepkg is short of san packages and needs to be remakepkg with qemu_san/libvirt_san enable"
+        rpm -Uvh /virttest_san_rpm/*.rpm --force || exit $?
+        # config qemu asan
+        profile=/etc/profile
+        echo "export LSAN_OPTIONS=suppressions=/home/suppfile" >> $profile
+        echo "export ASAN_OPTIONS=detect_leaks=1:halt_on_error=0:log_path=/home/sanlog/:log_exe_name=1:disable_coredump=0:fast_unwind_on_malloc=0" >> $profile
+        source $profile
+        mkdir -p /home/sanlog
+        chmod 777 /home/sanlog/
+        mv /virttest_san_rpm /virttest_san_rpm_bak
+    fi
+}
+
+config_qemu_san
+
 # config bash prompt. The shell prompt that indicates a successfull login 
 bash_prompt="/root/.shell/bash_prompt"
 if [ -f $bash_prompt -a ! -e $bash_prompt.bak_by_CI ]; then
