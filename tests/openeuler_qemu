@@ -16,6 +16,8 @@ workdir=$(pwd)
 depends_install() {
     mkdir ${workdir}/qemu_depends/
     sudo yum install -y \
+        ninja-build \
+        diffutils \
         gcc \
         git \
         make \
@@ -62,6 +64,10 @@ depends_install() {
         usbredir-devel \
         virglrenderer-devel \
         zlib-devel \
+        libusb-devel \
+        xfsprogs-devel \
+        device-mapper-devel \
+        libgcrypt-devel \
         libasan \
         --downloadonly --downloaddir=${workdir}/qemu_depends
     sudo rpm -ivh --force --nodeps ${workdir}/qemu_depends/*.rpm
