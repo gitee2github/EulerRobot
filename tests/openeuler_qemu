@@ -162,7 +162,9 @@ cppcheck() {
     cd cppcheck
     make -j 60 CFGDIR=/usr/local/cppcheck/cfg FILESDIR=/usr/share/cppcheck
     make install FILESDIR=/usr/share/cppcheck
-    cppcheck -j 60 ${workdir}/${repo_name} $cppcheck_options 2> ${workdir}/cppcheck.xml
+    ulimit -n 10240
+    chmod 777 /usr/bin/cppcheck
+    /usr/bin/cppcheck -j 60 ${workdir}/${repo_name} $cppcheck_options 2> ${workdir}/cppcheck.xml
 
     upload_files -t results ${workdir}/cppcheck.xml
 }
