@@ -330,11 +330,19 @@ virttest-47:
   vt_no_filter: at_okay_dt_error
   vt_only_filter: pre_vm_state_running.at_option_live
 
-virttest-48:
+virttest-48-1:
   vt_reference:
   - virsh.attach_detach_interface
   vt_type: libvirt
   vt_only_filter: normal_test.vm_running.exist_bridge
+  vt_no_filter: domid
+
+virttest-48-2:
+  vt_reference:
+  - virsh.attach_detach_interface
+  vt_type: libvirt
+  vt_only_filter: normal_test.vm_running.exist_bridge.domid
+  vt_guest_os: Guest.Linux.openEuler.20.09
 
 virttest-49:
   vt_reference:
