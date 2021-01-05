@@ -138,6 +138,7 @@ images_download() {
             wget -dq $file_server/$image.succ -O $images_path/tmp.succ
             diff $images_path/tmp.succ $images_path/$image.succ
             if [ $? -ne 0 ]; then
+                rm -rf $images_path/$image.backup
                 wget -dq $file_server/$image -O $images_path/$image
                 wget -dq $file_server/$image.succ -O $images_path/$image.succ
             fi
