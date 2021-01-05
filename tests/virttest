@@ -242,7 +242,6 @@ fi
 
 # config virttest for 2hosts
 pwd=${node_pwd:-Helloman@12#$}
-[ -z  "$env_type" ] || env_type = ""
 if [ x$env_type == x"2hosts" -a ! -e $libvirt_base_cfg.bak_by_CI ];then
     config_virttest $server $client $pwd
 fi
