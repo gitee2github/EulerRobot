@@ -24,6 +24,7 @@ images_aarch64=("openEuler-20.03-aarch64.qcow2" "openEuler-20.09-aarch64.qcow2")
 images_x86_64=("openEuler-20.03-x86_64.qcow2" "openEuler-20.09-x86_64.qcow2")
 file_server="${image_server}/initrd/qemu-image"
 images_path="/var/lib/avocado/data/avocado-vt/images/"
+images_partition="/dev/sda"
 
 set_up() {
     iptables -F
@@ -304,7 +305,7 @@ config_tmpdir() {
 
 # image file system config
 if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
-    mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
+    mount $images_partition $images_path || echo y | mkfs.ext4 $images_partition && mount $images_partition $images_path
 fi
 config_tmpdir
 
