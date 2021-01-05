@@ -218,6 +218,15 @@ config_qemu_san() {
     fi
 }
 
+# upload sanlog
+upload_sanlog() {
+    if [ x$qemu_san == x"enable" ]; then
+        echo "$vt_reference" > "/home/sanlog/date.log"
+        upload_files -t results "/home/sanlog"
+        rm -rf /home/sanlog/*
+    fi
+}
+
 config_qemu_san
 
 # config bash prompt. The shell prompt that indicates a successfull login 
@@ -335,5 +344,7 @@ mkdir /home/$vt_reference
 mv ${logs_dir}/* /home/$vt_reference
 upload_files -t results /home/$vt_reference
 rm -rf /home/${vt_reference:?}
+
+upload_sanlog
 
 run_target_stats $(basename $0)
