@@ -270,6 +270,18 @@ pip3 list | grep simplejson || pip3 install simplejson
 pip3 list | grep psutil || pip3 install psutil
 pip3 list | grep netifaces || pip3 install netifaces
 
+# prepare cmd "service", can not install initscripts via yum when os_mount=initramfs
+prepare_for_initramfs() {
+    if [ $os_mount == "initramfs" ] && [ ! -f /usr/sbin/service ];then
+        rpm_tmp="/root/rpm_tmp"
+        yum install -y initscripts --downloadonly --downloaddir $rpm_tmp
+        rpm2cpio $rpm_tmp/initscripts*.rpm | cpio -idv ./usr/sbin/service
+        cp ./usr/sbin/service /usr/sbin/
+        rm -rf ${rpm_tmp:?}
+    fi
+}
+prepare_for_initramfs
+
 if [ $vt_reference == "remote_deploy" ]; then
     exit 0
 fi
