@@ -134,23 +134,24 @@ tear_down() {
 
 images_download() {
     if [ "$arch" = "aarch64" ];then
-            images=${images_aarch64[@]}
+        images=${images_aarch64[@]}
     else
-            images=${images_x86_64[@]}
+        images=${images_x86_64[@]}
     fi
 
     for image in ${images[@]};do
-            if [ ! -f $images_path/$image.succ ]; then
-                wget $file_server/$image -O $images_path/$image
-                wget $file_server/$image.succ -O $images_path/$image.succ
-            else
-                wget $file_server/$image.succ -O $images_path/tmp.succ
-                diff $images_path/tmp.succ $images_path/$image.succ
-                if [ $? -ne 0 ]; then
-                    wget $file_server/$image -O $images_path/$image
-                    wget $file_server/$image.succ -O $images_path/$image.succ
-                fi
+        if [ ! -f $images_path/$image.succ ]; then
+            wget -dq $file_server/$image -O $images_path/$image
+            wget -dq $file_server/$image.succ -O $images_path/$image.succ
+        else
+            wget -dq $file_server/$image.succ -O $images_path/tmp.succ
+            diff $images_path/tmp.succ $images_path/$image.succ
+            if [ $? -ne 0 ]; then
+                rm -rf $images_path/$image.backup
+                wget -dq $file_server/$image -O $images_path/$image
+                wget -dq $file_server/$image.succ -O $images_path/$image.succ
             fi
+        fi
     done
 }
 
