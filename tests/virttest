@@ -24,6 +24,15 @@ images_aarch64=("openEuler-20.03-aarch64.qcow2" "openEuler-20.09-aarch64.qcow2")
 images_x86_64=("openEuler-20.03-x86_64.qcow2" "openEuler-20.09-x86_64.qcow2")
 file_server="${image_server}/initrd/qemu-image"
 images_path="/var/lib/avocado/data/avocado-vt/images/"
+images_partition="/dev/sda"
+
+default_dns_address="223.5.5.5"    # The default DNS address for compass-ci
+dns_address=${dns_address:-$default_dns_address}
+default_pwd="Helloman@12#$"
+node_pwd=${node_pwd:-$default_pwd}
+
+libvirt_base_cfg="/var/lib/avocado/data/avocado-vt/backends/libvirt/cfg/base.cfg"
+bash_prompt="/root/.shell/bash_prompt"
 
 set_up() {
     iptables -F
@@ -156,7 +165,6 @@ run_test() {
     )
 }
 
-libvirt_base_cfg=/var/lib/avocado/data/avocado-vt/backends/libvirt/cfg/base.cfg
 config_virttest() {
     local_ip=$1
     remote_ip=$2
@@ -230,7 +238,6 @@ upload_sanlog() {
 config_qemu_san
 
 # config bash prompt. The shell prompt that indicates a successfull login 
-bash_prompt="/root/.shell/bash_prompt"
 if [ -f $bash_prompt -a ! -e $bash_prompt.bak_by_CI ]; then
     cp -a $bash_prompt $bash_prompt.bak_by_CI
     sed -i '/^PS1=/c PS1=\"[\\u@\\h \\W]# \"' $bash_prompt
@@ -247,8 +254,9 @@ if [ ! -e /etc/bashrc.bak_by_CI ]; then
     log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
 
     # config dns
-    [ -z "$dns_address" ] || echo "nameserver $dns_address" >> /etc/resolv.conf
-
+    if [ ! -f /etc/resolv.conf ]; then
+        echo "nameserver $dns_address" >> /etc/resolv.conf
+    fi
 fi
 
 # config qemu
@@ -267,10 +275,8 @@ if [ $vt_reference == "remote_deploy" ]; then
 fi
 
 # config virttest for 2hosts
-pwd=${node_pwd:-Helloman@12#$}
-[ -z  "$env_type" ] || env_type = ""
 if [ x$env_type == x"2hosts" -a ! -e $libvirt_base_cfg.bak_by_CI ];then
-    config_virttest $server $client $pwd
+    config_virttest $server $client $node_pwd
 fi
 
 conf_file=$(find /usr/local/lib/ -name "avocado.conf")
@@ -316,9 +322,6 @@ for _only_filter in $only_filter; do
 done
 [ -z "$vt_tests" ] && die "Not found tests: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
 
-ok=0
-all=0
-
 # config tmp dir
 config_tmpdir() {
     umount /var/tmp > /dev/null  2>&1
@@ -331,22 +334,24 @@ config_tmpdir() {
 
 # image file system config
 if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
-    mount /dev/sdb ${images_path} || echo y | mkfs.ext4 /dev/sdb && mount /dev/sdb ${images_path}
+    mount $images_partition $images_path || echo y | mkfs.ext4 $images_partition && mount $images_partition $images_path
 fi
 config_tmpdir
 
 # download images
 images_download
 
+test_ok=0
+test_all=0
 for vt_test in $vt_tests; do
     run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
-    [ $? -eq 0 ] && ((ok++))
-    ((all++))
+    [ $? -eq 0 ] && ((test_ok++))
+    ((test_all++))
 done
 
-echo "$vt_name.result.ok: $ok"
-echo "$vt_name.result.all: $all"
-echo "$vt_name.result.rate: $(($ok*100/$all))"
+echo "$vt_name.result.ok: $test_ok"
+echo "$vt_name.result.all: $test_all"
+echo "$vt_name.result.rate: $(($test_ok*100/$test_all))"
 
 mkdir /home/$vt_reference
 mv ${logs_dir}/* /home/$vt_reference
