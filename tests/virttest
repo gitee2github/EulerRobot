@@ -132,29 +132,6 @@ tear_down() {
     return $errno
 }
 
-images_download() {
-    if [ "$arch" = "aarch64" ];then
-        images=${images_aarch64[@]}
-    else
-        images=${images_x86_64[@]}
-    fi
-
-    for image in ${images[@]};do
-        if [ ! -f $images_path/$image.succ ]; then
-            wget -dq $file_server/$image -O $images_path/$image
-            wget -dq $file_server/$image.succ -O $images_path/$image.succ
-        else
-            wget -dq $file_server/$image.succ -O $images_path/tmp.succ
-            diff $images_path/tmp.succ $images_path/$image.succ
-            if [ $? -ne 0 ]; then
-                rm -rf $images_path/$image.backup
-                wget -dq $file_server/$image -O $images_path/$image
-                wget -dq $file_server/$image.succ -O $images_path/$image.succ
-            fi
-        fi
-    done
-}
-
 run_test() {
     (
     set_up
@@ -211,8 +188,7 @@ config_virttest() {
     sed -i 's/^# \(migrate_dest_pwd = "${remote_pwd}"\)/\1/' $libvirt_base_cfg
 }
 
-# config qemu san
-config_qemu_san() {
+prepare_qemu_san() {
     if [ x$qemu_san == x"enable" ] && [ ! -d /virttest_san_rpm_bak ]; then
         [ -d /virttest_san_rpm ] || die "Makepkg is short of san packages and needs to be remakepkg with qemu_san/libvirt_san enable"
         rpm -Uvh /virttest_san_rpm/*.rpm --force || exit $?
@@ -236,40 +212,48 @@ upload_sanlog() {
     fi
 }
 
-config_qemu_san
-
 # config bash prompt. The shell prompt that indicates a successfull login 
-if [ -f $bash_prompt -a ! -e $bash_prompt.bak_by_CI ]; then
-    cp -a $bash_prompt $bash_prompt.bak_by_CI
-    sed -i '/^PS1=/c PS1=\"[\\u@\\h \\W]# \"' $bash_prompt
-    source  $bash_prompt
-fi
+config_bash_prompt() {
+    if [ -f $bash_prompt -a ! -e $bash_prompt.bak_by_CI ]; then
+        cp -a $bash_prompt $bash_prompt.bak_by_CI
+        sed -i '/^PS1=/c PS1=\"[\\u@\\h \\W]# \"' $bash_prompt
+        source  $bash_prompt
+    fi
+}
 
-# config umask
-if [ ! -e /etc/bashrc.bak_by_CI ]; then
-    cp -a /etc/bashrc /etc/bashrc.bak_by_CI
-    sed -i '/^umask /c umask 0022' /etc/bashrc
+config_umask() {
+    if [ ! -e /etc/bashrc.bak_by_CI ]; then
+        cp -a /etc/bashrc /etc/bashrc.bak_by_CI
+        sed -i '/^umask /c umask 0022' /etc/bashrc
+    fi
+}
 
-    # service unmask
-    log_cmd systemctl restart nfs ||systemctl unmask network.target
-    log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
+config_qemu_conf() {
+    if [ ! -e /etc/libvirt/qemu.conf.bak_by_CI ];then
+        cp /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.bak_by_CI
+        sed -i 's/^#user/user/;s/^#group/group/' /etc/libvirt/qemu.conf
+    fi
+}
 
-    # config dns
+config_dns() {
     if [ ! -f /etc/resolv.conf ]; then
         echo "nameserver $dns_address" >> /etc/resolv.conf
     fi
-fi
+}
 
-# config qemu
-if [ ! -e /etc/libvirt/qemu.conf.bak_by_CI ];then
-    cp /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.bak_by_CI
-    sed -i 's/^#user/user/;s/^#group/group/' /etc/libvirt/qemu.conf
-fi
+unmask_service() {
+    if systemctl status network.target |grep "is masked" || systemctl status libvirtd |grep "is masked"; then
+        log_cmd systemctl restart nfs ||systemctl unmask network.target
+        log_cmd systemctl restart libvirtd ||systemctl unmask libvirtd && systemctl restart libvirtd
+    fi
+}
 
 # avocado-vt requirements check
-pip3 list | grep simplejson || pip3 install simplejson
-pip3 list | grep psutil || pip3 install psutil
-pip3 list | grep netifaces || pip3 install netifaces
+check_avocado_req() {
+    pip3 list | grep simplejson || pip3 install simplejson
+    pip3 list | grep psutil || pip3 install psutil
+    pip3 list | grep netifaces || pip3 install netifaces
+}
 
 # prepare cmd "service", can not install initscripts via yum when os_mount=initramfs
 prepare_for_initramfs() {
@@ -281,59 +265,18 @@ prepare_for_initramfs() {
         rm -rf ${rpm_tmp:?}
     fi
 }
-prepare_for_initramfs
 
-if [ $vt_reference == "remote_deploy" ]; then
-    exit 0
-fi
-
-# config virttest for 2hosts
-if [ x$env_type == x"2hosts" -a ! -e $libvirt_base_cfg.bak_by_CI ];then
-    config_virttest $server $client $node_pwd
-fi
-
-conf_file=$(find /usr/local/lib/ -name "avocado.conf")
-[ -e "$conf_file" ] || die "Missing config file avocado.conf"
-
-logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s#^~#$(cd ~; pwd)#")
-[ -z "$logs_dir" ] && die "Not found logs_dir in avocado.conf"
-
-if [ "$arch" = "aarch64" ]; then
-    [ "$vt_machine_type" = "q35" ] && echo "$arch vt_machine_type=$vt_machine_type, skip run" && exit 0
-else
-    [ "$vt_machine_type" = "arm64-pci" ] && echo "$arch vt_machine_type=$vt_machine_type, skip run" && exit 0
-fi
-
-[ -z "$vt_name" ] && vt_name=$vt_reference
-[ -z "$vt_type" ] && vt_type="libvirt"
-[ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.openEuler.20.03"
-[ -z "$vt_machine_type" ] &&
-    if [ "$arch" = "aarch64" ]; then
-        vt_machine_type="arm64-pci"
-    else
-        vt_machine_type="q35"
+prepare_for_2hosts() {
+    # if it is 2hostos remote env, exit 0 without run any test
+    if [ $vt_reference == "remote_deploy" ]; then
+        exit 0
     fi
-[ -z "$job_timeout" ] && job_timeout=600
 
-base_params=(--vt-type "$vt_type")
-base_params+=(--vt-guest-os "$vt_guest_os")
-base_params+=(--vt-machine-type "$vt_machine_type")
-
-extra_params=()
-[ -n "$vt_no_filter" ] && extra_params+=(--vt-no-filter "$vt_no_filter")
-[ -n "$vt_only_filter" ] && extra_params+=(--vt-only-filter "$vt_only_filter")
-
-vt_tests=$(avocado list "${vt_reference:?}" "${base_params[@]}" "${extra_params[@]}")
-[ $? -eq 0 ] || die "Failed to exec: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
-
-vt_tests=$(echo "$vt_tests" | awk '{print$2}')
-for _no_filter in $no_filter; do
-    vt_tests=$(echo "$vt_tests" | grep -Ev "$_no_filter") || break
-done
-for _only_filter in $only_filter; do
-    vt_tests=$(echo "$vt_tests" | grep -E "$_only_filter") || break
-done
-[ -z "$vt_tests" ] && die "Not found tests: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
+    # config virttest for 2hosts local env
+    if [ x$env_type == x"2hosts" -a ! -e $libvirt_base_cfg.bak_by_CI ];then
+        config_virttest $server $client $node_pwd
+    fi
+}
 
 # config tmp dir
 config_tmpdir() {
@@ -345,32 +288,116 @@ config_tmpdir() {
     mount --bind ${images_path}/tmp /var/tmp
 }
 
-# image file system config
-if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
-    mount $images_partition $images_path || echo y | mkfs.ext4 $images_partition && mount $images_partition $images_path
-fi
-config_tmpdir
+# config images file system
+config_image_filesystem() {
+    if [ $os_mount == "cifs" -o $os_mount == "nfs" -o $os_mount == "initramfs" ]; then
+        mount $images_partition $images_path || echo y | mkfs.ext4 $images_partition && mount $images_partition $images_path
+    fi
+    config_tmpdir
+}
 
 # download images
-images_download
+download_images() {
+    if [ "$arch" = "aarch64" ];then
+        images=${images_aarch64[@]}
+    else
+        images=${images_x86_64[@]}
+    fi
 
-test_ok=0
-test_all=0
-for vt_test in $vt_tests; do
-    run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
-    [ $? -eq 0 ] && ((test_ok++))
-    ((test_all++))
-done
+    for image in ${images[@]};do
+        if [ ! -f $images_path/$image.succ ]; then
+            wget -dq $file_server/$image -O $images_path/$image
+            wget -dq $file_server/$image.succ -O $images_path/$image.succ
+        else
+            wget -dq $file_server/$image.succ -O $images_path/tmp.succ
+            diff $images_path/tmp.succ $images_path/$image.succ
+            if [ $? -ne 0 ]; then
+                rm -rf $images_path/$image.backup
+                wget -dq $file_server/$image -O $images_path/$image
+                wget -dq $file_server/$image.succ -O $images_path/$image.succ
+            fi
+        fi
+    done
+}
 
-echo "$vt_name.result.ok: $test_ok"
-echo "$vt_name.result.all: $test_all"
-echo "$vt_name.result.rate: $(($test_ok*100/$test_all))"
+prepare_avocado_params() {
+    conf_file=$(find /usr/local/lib/ -name "avocado.conf")
+    [ -e "$conf_file" ] || die "Missing config file avocado.conf"
 
-mkdir /home/$vt_reference
-mv ${logs_dir}/* /home/$vt_reference
-upload_files -t results /home/$vt_reference
-rm -rf /home/${vt_reference:?}
+    logs_dir=$(awk -F= '/logs_dir/{print$2}' "$conf_file" | xargs | sed "s#^~#$(cd ~; pwd)#")
+    [ -z "$logs_dir" ] && die "Not found logs_dir in avocado.conf"
 
+    if [ "$arch" = "aarch64" ]; then
+        [ "$vt_machine_type" = "q35" ] && echo "$arch vt_machine_type=$vt_machine_type, skip run" && exit 0
+    else
+        [ "$vt_machine_type" = "arm64-pci" ] && echo "$arch vt_machine_type=$vt_machine_type, skip run" && exit 0
+    fi
+
+    [ -z "$vt_name" ] && vt_name=$vt_reference
+    [ -z "$vt_type" ] && vt_type="libvirt"
+    [ -z "$vt_guest_os" ] && vt_guest_os="Guest.Linux.openEuler.20.03"
+    [ -z "$vt_machine_type" ] &&
+        if [ "$arch" = "aarch64" ]; then
+            vt_machine_type="arm64-pci"
+        else
+            vt_machine_type="q35"
+        fi
+    [ -z "$job_timeout" ] && job_timeout=600
+
+    base_params=(--vt-type "$vt_type")
+    base_params+=(--vt-guest-os "$vt_guest_os")
+    base_params+=(--vt-machine-type "$vt_machine_type")
+
+    extra_params=()
+    [ -n "$vt_no_filter" ] && extra_params+=(--vt-no-filter "$vt_no_filter")
+    [ -n "$vt_only_filter" ] && extra_params+=(--vt-only-filter "$vt_only_filter")
+
+    vt_tests=$(avocado list "${vt_reference:?}" "${base_params[@]}" "${extra_params[@]}")
+    [ $? -eq 0 ] || die "Failed to exec: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
+
+    vt_tests=$(echo "$vt_tests" | awk '{print$2}')
+    for _no_filter in $no_filter; do
+        vt_tests=$(echo "$vt_tests" | grep -Ev "$_no_filter") || break
+    done
+    for _only_filter in $only_filter; do
+        vt_tests=$(echo "$vt_tests" | grep -E "$_only_filter") || break
+    done
+    [ -z "$vt_tests" ] && die "Not found tests: avocado list ${vt_reference:?} ${base_params[@]} ${extra_params[@]}"
+}
+
+run_reference_test() {
+    test_ok=0
+    test_all=0
+    for vt_test in $vt_tests; do
+        run_test avocado run "${vt_test:?}" "${base_params[@]}" --job-timeout "$job_timeout" 2>&1
+        [ $? -eq 0 ] && ((test_ok++))
+        ((test_all++))
+    done
+
+    echo "$vt_name.result.ok: $test_ok"
+    echo "$vt_name.result.all: $test_all"
+    echo "$vt_name.result.rate: $(($test_ok*100/$test_all))"
+
+    mkdir /home/$vt_reference
+    mv ${logs_dir}/* /home/$vt_reference
+    upload_files -t results /home/$vt_reference
+    rm -rf /home/${vt_reference:?}
+}
+
+prepare_qemu_san
+config_bash_prompt
+config_umask
+config_qemu_conf
+config_dns
+unmask_service
+check_avocado_req
+prepare_for_initramfs
+prepare_for_2hosts
+
+prepare_avocado_params
+config_image_filesystem
+download_images
+run_reference_test
 upload_sanlog
 
 run_target_stats $(basename $0)
