@@ -307,14 +307,14 @@ download_images() {
     for image in ${images[@]};do
         if [ ! -f $images_path/$image.succ ]; then
             wget -dq $file_server/$image -O $images_path/$image
-            wget -dq $file_server/$image.succ -O $images_path/$image.succ
+            wget $file_server/$image.succ -O $images_path/$image.succ
         else
-            wget -dq $file_server/$image.succ -O $images_path/tmp.succ
+            wget $file_server/$image.succ -O $images_path/tmp.succ
             diff $images_path/tmp.succ $images_path/$image.succ
             if [ $? -ne 0 ]; then
                 rm -rf $images_path/$image.backup
                 wget -dq $file_server/$image -O $images_path/$image
-                wget -dq $file_server/$image.succ -O $images_path/$image.succ
+                wget $file_server/$image.succ -O $images_path/$image.succ
             fi
         fi
     done
