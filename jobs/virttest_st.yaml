@@ -421,9 +421,27 @@ virttest-70:
   vt_type: libvirt
   vt_no_filter: kvmclock,hpet
 
-virttest-71-1:
+virttest-71-1-1:
   vt_reference:
-  - virsh.attach_device.block.multi_virtio_file
+  - virsh.attach_device.block.multi_virtio_file.with_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-1-2:
+  vt_reference:
+  - virsh.attach_device.block.multi_virtio_file.with_alias.error_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-1-3:
+  vt_reference:
+  - virsh.attach_device.block.multi_virtio_file.without_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-1-4:
+  vt_reference:
+  - virsh.attach_device.block.multi_virtio_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
@@ -433,45 +451,165 @@ virttest-71-2:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-3:
+virttest-71-3-1:
   vt_reference:
-  - virsh.attach_device.block.single_scsi_file
+  - virsh.attach_device.block.single_scsi_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-4:
+virttest-71-3-2:
   vt_reference:
-  - virsh.attach_device.single_usb_file
+  - virsh.attach_device.block.single_scsi_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-5:
+virttest-71-3-3:
   vt_reference:
-  - virsh.attach_device.single_virtio_file
+  - virsh.attach_device.block.single_scsi_file.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-6:
+virttest-71-3-4:
   vt_reference:
-  - virsh.attach_device.character.channel
+  - virsh.attach_device.block.single_scsi_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-7:
+virttest-71-4-1:
   vt_reference:
-  - virsh.attach_device.character.console
+  - virsh.attach_device.single_usb_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8:
+virttest-71-4-2:
   vt_reference:
-  - virsh.attach_device.character.serial
+  - virsh.attach_device.single_usb_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-9:
+virttest-71-4-3:
   vt_reference:
-  - virsh.attach_device.controller.type_scsi
+  - virsh.attach_device.single_usb_file.without_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-4-4:
+  vt_reference:
+  - virsh.attach_device.single_usb_file.without_alias.error_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-5-1:
+  vt_reference:
+  - virsh.attach_device.single_virtio_file.with_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-5-2:
+  vt_reference:
+  - virsh.attach_device.single_virtio_file.with_alias.error_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-5-3:
+  vt_reference:
+  - virsh.attach_device.single_virtio_file.without_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-5-4:
+  vt_reference:
+  - virsh.attach_device.single_virtio_file.without_alias.error_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-6-1:
+  vt_reference:
+  - virsh.attach_device.character.channel.type_pty.with_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-6-2:
+  vt_reference:
+  - virsh.attach_device.character.channel.type_pty.without_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-6-3:
+  vt_reference:
+  - virsh.attach_device.character.channel.type_unix.with_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-6-4:
+  vt_reference:
+  - virsh.attach_device.character.channel.type_unix.without_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-7-1:
+  vt_reference:
+  - virsh.attach_device.character.console.type_pty.with_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-7-2:
+  vt_reference:
+  - virsh.attach_device.character.console.type_pty.without_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8-1:
+  vt_reference:
+  - virsh.attach_device.character.serial.single_serial.with_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8-2:
+  vt_reference:
+  - virsh.attach_device.character.serial.single_serial.without_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8-3:
+  vt_reference:
+  - virsh.attach_device.character.serial.multi_serial.with_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8-4:
+  vt_reference:
+  - virsh.attach_device.character.serial.multi_serial.without_alias
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-8-5:
+  vt_reference:
+  - virsh.attach_device.character.serial.multi_type
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-9-1:
+  vt_reference:
+  - virsh.attach_device.controller.type_scsi.with_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-9-2:
+  vt_reference:
+  - virsh.attach_device.controller.type_scsi.with_alias.error_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-9-3:
+  vt_reference:
+  - virsh.attach_device.controller.type_scsi.without_alias.normal_test
+  vt_type: libvirt
+  no_filter: hot_attach_hot_vm.*block.*virtio_file
+
+virttest-71-9-4:
+  vt_reference:
+  - virsh.attach_device.controller.type_scsi.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
