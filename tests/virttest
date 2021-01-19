@@ -374,9 +374,10 @@ run_reference_test() {
         ((test_all++))
     done
 
-    echo "$vt_name.result.ok: $test_ok"
-    echo "$vt_name.result.all: $test_all"
-    echo "$vt_name.result.rate: $(($test_ok*100/$test_all))"
+    echo "$vt_name.nr_pass: $test_ok"
+    echo "$vt_name.nr_fail: $(($test_all-$test_ok))"
+    echo "$vt_name.nr_total: $test_all"
+    echo "$vt_name.pass_rate: $(($test_ok*100/$test_all))"
 
     mkdir /home/$vt_reference
     mv ${logs_dir}/* /home/$vt_reference

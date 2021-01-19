@@ -4,17 +4,17 @@ tmp_log=$HOME/$(basename $0)_$RANDOM
 
 tee -a ${tmp_log:?} > /dev/null 2>&1
 
-cat $tmp_log |grep -E ".+\.result\..+: [0-9]+$"
+cat $tmp_log |grep -E ".+\.nr_.+: [0-9]+$"
 
 echo "--------------rate not 100------------"
-cat $tmp_log |grep -E ".+\.result\.rate: [0-9]+$" |grep -v 100
+cat $tmp_log |grep -E ".+\.pass_rate: [0-9]+$" |grep -v 100
 
 echo "--------------result stats------------"
-ok=`cat $tmp_log |grep -E ".+\.result\.ok: [0-9]+$" |awk '{sum += $2} END {print sum}'`
-all=`cat $tmp_log |grep -E ".+\.result\.all: [0-9]+$" |awk '{sum += $2} END {print sum}'`
+ok=`cat $tmp_log |grep -E ".+\.nr_pass: [0-9]+$" |awk '{sum += $2} END {print sum}'`
+all=`cat $tmp_log |grep -E ".+\.nr_total: [0-9]+$" |awk '{sum += $2} END {print sum}'`
 
-echo "result.ok: $ok"
-echo "result.all: $all"
-echo "result.rate: $(($ok*100/$all))"
+echo "nr_pass: $ok"
+echo "nr_total: $all"
+echo "pass_rate: $(($ok*100/$all))"
 
 rm -rf ${tmp_log:?}
