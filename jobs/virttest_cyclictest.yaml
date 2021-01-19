@@ -1,0 +1,19 @@
+suite: cyclictest
+testcase: cyclictest
+category: benchmark
+
+cyclictest:
+  priority: 99
+  # 0 = CLOCK_MONNOTONIC (default)
+  # 1 = CLOCK_REALTIME
+  clock: 0
+  # base interval of thread in us
+  interval: 1000
+  histogram: 30
+  loops: 10000
+  affinity: 3 
+  duration: 100
+  threads: 1
+
+vt:
+  domain: virttest_perf.xml
