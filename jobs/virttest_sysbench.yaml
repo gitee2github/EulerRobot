@@ -1,0 +1,14 @@
+suite: sysbench-cpu
+testcase: sysbench-cpu
+category: benchmark
+
+nr_threads:
+- 1
+- 8
+
+sysbench-cpu:
+  cpu_max_prime: 50000
+  runtime: 300s
+
+vt:
+  domain: virttest_perf.xml
