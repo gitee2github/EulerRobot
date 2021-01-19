@@ -1,0 +1,16 @@
+suite: stream
+testcase: stream
+category: benchmark
+
+nr_threads:
+- 1
+- 8
+
+stream:
+  array_size:
+  - 10000000 # 0.2GB
+  omp:
+  - true
+
+vt:
+  domain: virttest_perf.xml
