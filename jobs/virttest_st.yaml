@@ -2,11 +2,13 @@ suite: virttest
 testcase: virttest
 category: functional
 
+---
 virttest-0:
   vt_reference:
   - qemu_img
   vt_type: qemu
 
+---
 virttest-1:
   vt_reference:
   - qemu_disk_img
@@ -14,44 +16,52 @@ virttest-1:
   vt_no_filter: commit
   no_filter: info.change_block_interface.default
 
+---
 virttest-2:
   vt_reference:
   - qemu_guest_agent
   vt_type: qemu
   vt_no_filter: check_reboot,check_halt,check_suspend,check_hotplug_frozen,check_fsinfo,check_guest_file.read,check_guest_exec,check_snapshot,with_selinux,check_path_fsfreeze_hook,check_fstrim,gagent_check_blacklist
 
+---
 virttest-3:
   vt_reference:
   - qemu_img_convert
   vt_type: qemu
 
+---
 virttest-4:
   vt_reference:
   - device_option_check
   vt_type: qemu
 
+---
 virttest-5:
   vt_reference:
   - virtio_mode
   vt_type: qemu
   vt_no_filter: with_legacy
 
+---
 virttest-6:
   vt_reference:
   - ioeventfd
   vt_type: qemu
 
+---
 virttest-7:
   vt_reference:
   - qmp_basic
   vt_type: qemu
 
+---
 virttest-8:
   vt_reference:
   - qmp_command
   vt_type: qemu
   vt_no_filter: qmp_memsave
 
+---
 virttest-9:
   vt_reference:
   - virsh.reset
@@ -59,27 +69,32 @@ virttest-9:
   vt_type: libvirt
   vt_no_filter: acl_test
 
+---
 virttest-10:
   vt_reference:
   - libvirt_usb_hotplug_controller
   vt_name: usb_contriller_hotplug
   vt_type: libvirt
 
+---
 virttest-11:
   vt_reference:
   - libvirt_usb_hotplug_device
   vt_type: libvirt
 
+---
 virttest-12:
   vt_reference:
   - numa_memory
   vt_type: libvirt
 
+---
 virttest-13:
   vt_reference:
   - numa_preferred_undefine
   vt_type: libvirt
 
+---
 virttest-14:
   vt_reference:
   - virtual_disks.iscsi
@@ -87,12 +102,14 @@ virttest-14:
   vt_type: libvirt
   vt_no_filter: test_save_snapshot,ipv6_test
 
+---
 virttest-15:
   vt_reference:
   - virtual_disks.usb
   vt_name: virtual_disks_usb
   vt_type: libvirt
 
+---
 virttest-16:
   vt_reference:
   - virtual_devices.input_devices
@@ -100,12 +117,14 @@ virttest-16:
   vt_type: libvirt
   vt_no_filter: bus_type_ps2.input_type_mouse,bus_type_ps2.input_type_keyboard
 
+---
 virttest-17:
   vt_reference:
   - virtual_devices.sound_device
   vt_name: virtual_devices_sound_device
   vt_type: libvirt
 
+---
 virttest-18:
   vt_reference:
   - virtual_devices.tpm_device
@@ -114,18 +133,21 @@ virttest-18:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: version_default,version_1.2,passthrough,test_suite
 
+---
 virttest-19:
   vt_reference:
   - virsh.save
   vt_name: virsh_save
   vt_type: libvirt
 
+---
 virttest-20:
   vt_reference:
   - virsh.schedinfo_qemu_posix
   vt_name: virsh_schedinfo_qemu_posix
   vt_type: libvirt
 
+---
 virttest-21:
   vt_reference:
   - virsh.start
@@ -133,12 +155,14 @@ virttest-21:
   vt_type: libvirt
   vt_no_filter: remote_start
 
+---
 virttest-23:
   vt_reference:
   - virsh.suspend
   vt_name: virsh_suspend
   vt_type: libvirt
 
+---
 virttest-24:
   vt_reference:
   - virsh.undefine
@@ -146,6 +170,7 @@ virttest-24:
   vt_type: libvirt
   vt_no_filter: remove_storage
 
+---
 virttest-25:
   vt_reference:
   - virsh.list
@@ -153,12 +178,14 @@ virttest-25:
   vt_type: libvirt
   vt_no_filter: remote
 
+---
 virttest-26:
   vt_reference:
   - virsh.domstats
   vt_name: virsh_domstats
   vt_type: libvirt
 
+---
 virttest-27:
   vt_reference:
   - virsh.domstate
@@ -166,90 +193,105 @@ virttest-27:
   vt_type: libvirt
   vt_no_filter: crash_vm
 
+---
 virttest-28:
   vt_reference:
   - virsh.dommemstat
   vt_name: virsh_dommemstat
   vt_type: libvirt
 
+---
 virttest-29:
   vt_reference:
   - virsh.dominfo
   vt_name: virsh_dominfo
   vt_type: libvirt
 
+---
 virttest-30:
   vt_reference:
   - virsh.domifstat
   vt_name: virsh_domifstat
   vt_type: libvirt
 
+---
 virttest-31:
   vt_reference:
   - virsh.domblkstat
   vt_name: virsh_domblkstat
   vt_type: libvirt
 
+---
 virttest-32:
   vt_reference:
   - virsh.version
   vt_name: virsh_version
   vt_type: libvirt
 
+---
 virttest-33:
   vt_reference:
   - virsh.uri
   vt_name: virsh_uri
   vt_type: libvirt
 
+---
 virttest-34:
   vt_reference:
   - virsh.sysinfo
   vt_name: virsh_sysinfo
   vt_type: libvirt
 
+---
 virttest-35:
   vt_reference:
   - virsh.nodememstats
   vt_name: virsh_nodememstats
   vt_type: libvirt
 
+---
 virttest-36:
   vt_reference:
   - virsh.nodeinfo
   vt_name: virsh_nodeinfo
   vt_type: libvirt
 
+---
 virttest-37:
   vt_reference:
   - virsh.nodecpustats
   vt_name: virsh_nodecpustats
   vt_type: libvirt
 
+---
 virttest-38:
   vt_reference:
   - virsh.domcapabilities
   vt_name: virsh_domcapabilities
   vt_type: libvirt
 
+---
 virttest-39:
   vt_reference:
   - virsh.cpu_models
   vt_name: virsh_cpu_models
   vt_type: libvirt
 
+---
 virttest-40:
   vt_reference:
   - virsh.capabilities
   vt_name: virsh_capabilities
   vt_type: libvirt
 
+---
 virttest-41:
   vt_reference:
   - virsh.vncdisplay
   vt_name: virsh_vncdisplay
   vt_type: libvirt
 
+---
 virttest-42:
   vt_reference:
   - virsh.vcpupin
@@ -257,12 +299,14 @@ virttest-42:
   vt_type: libvirt
   vt_no_filter: multi_dom
 
+---
 virttest-43:
   vt_reference:
   - virsh.vcpuinfo
   vt_name: virsh_vcpuinfo
   vt_type: libvirt
 
+---
 virttest-44:
   vt_reference:
   - virsh.vcpucount
@@ -270,6 +314,7 @@ virttest-44:
   vt_type: libvirt
   vt_no_filter: running_test
 
+---
 virttest-45:
   vt_reference:
   - channel.functional
@@ -277,75 +322,89 @@ virttest-45:
   vt_type: libvirt
   vt_no_filter: target_name_not_set.unix_type,auto_gen_port.pty_type,target_guestfwd.pty_type
 
+---
 virttest-46:
   vt_reference:
   - conf_file.libvirtd_conf.host_uuid
   vt_type: libvirt
 
+---
 virttest-47:
   vt_reference:
   - conf_file.libvirtd_conf.unix_sock
   vt_type: libvirt
 
+---
 virttest-49:
   vt_reference:
   - conf_file.qemu_conf.clear_emulator_capabilities
   vt_type: libvirt
 
+---
 virttest-50:
   vt_reference:
   - conf_file.qemu_conf.seccomp_sandbox
   vt_type: libvirt
 
+---
 virttest-51:
   vt_reference:
   - conf_file.qemu_conf.set_process_name
   vt_type: libvirt
 
+---
 virttest-52:
   vt_reference:
   - conf_file.qemu_conf.set_virtlogd
   vt_type: libvirt
   vt_no_filter: vm_with_spice
 
+---
 virttest-53:
   vt_reference:
   - conf_file.sysconfig_libvirtd.libvirtd_config
   vt_type: libvirt
 
+---
 virttest-54:
   vt_reference:
   - pcibridge
   vt_type: libvirt
 
+---
 virttest-55:
   vt_reference:
   - guestpin
   vt_type: libvirt
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-56:
   vt_reference:
   - max_vcpus
   vt_type: libvirt
 
+---
 virttest-57:
   vt_reference:
   - vcpu_affinity
   vt_type: libvirt
   vt_no_filter: vcpu_affinity_xml,vcpu_affinity_active,vcpu_affinity_config
 
+---
 virttest-58:
   vt_reference:
   - vcpu_misc
   vt_type: libvirt
   vt_only_filter: vcpu_smt_topology
 
+---
 virttest-59:
   vt_reference:
   - daemon.functional
   vt_type: libvirt
 
+---
 virttest-60:
   vt_reference:
   - graphics.functional
@@ -353,50 +412,59 @@ virttest-60:
   vt_no_filter: vnc_listen_ipv6,set_passwd
   vt_only_filter: vnc_only
 
+---
 virttest-61:
   vt_reference:
   - libvirt_hugepage
   vt_type: libvirt
   vt_no_filter: unixbench
 
+---
 virttest-62:
   vt_reference:
   - guest_numa
   vt_type: libvirt
   vt_no_filter: 1G,16M
 
+---
 virttest-63:
   vt_reference:
   - numa_capabilities
   vt_type: libvirt
 
+---
 virttest-64:
   vt_reference:
   - numa_memory
   vt_type: libvirt
 
+---
 virttest-65:
   vt_reference:
   - numa_preferred_undefine
   vt_type: libvirt
 
+---
 virttest-66:
   vt_reference:
   - timer_management
   vt_type: libvirt
   vt_no_filter: kvmclock,hpet,hpet_tsc,platform
 
+---
 virttest-67:
   vt_reference:
   - virsh.attach_detach_disk
   vt_type: libvirt
   vt_no_filter: block_disk_type_lun,audit_check
 
+---
 virttest-68:
   vt_reference:
   - virsh.attach_detach_disk_matrix
   vt_type: libvirt
 
+---
 virttest-69:
   sub_module: 1
   vt_reference:
@@ -404,6 +472,7 @@ virttest-69:
   vt_type: libvirt
   vt_no_filter: domid
 
+---
 virttest-69:
   sub_module: 2
   vt_reference:
@@ -412,12 +481,14 @@ virttest-69:
   vt_only_filter: domid
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-70:
   vt_reference:
   - virsh.attach_detach_interface_matrix
   vt_type: libvirt
   vt_no_filter: kvmclock,hpet
 
+---
 virttest-71:
   sub_module: 1.1
   vt_reference:
@@ -425,6 +496,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 1.2
   vt_reference:
@@ -432,6 +504,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 1.3
   vt_reference:
@@ -439,6 +512,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 1.4
   vt_reference:
@@ -446,6 +520,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 2
   vt_reference:
@@ -453,6 +528,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 3.1
   vt_reference:
@@ -460,6 +536,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 3.2
   vt_reference:
@@ -467,6 +544,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 3.3
   vt_reference:
@@ -474,6 +552,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 3.4
   vt_reference:
@@ -481,6 +560,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 4.1
   vt_reference:
@@ -488,6 +568,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 4.2
   vt_reference:
@@ -495,6 +576,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 4.3
   vt_reference:
@@ -502,6 +584,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 4.4
   vt_reference:
@@ -509,6 +592,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 5.1
   vt_reference:
@@ -516,6 +600,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 5.2
   vt_reference:
@@ -523,6 +608,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 5.3
   vt_reference:
@@ -530,6 +616,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 5.4
   vt_reference:
@@ -537,6 +624,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 6.1
   vt_reference:
@@ -544,6 +632,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 6.2
   vt_reference:
@@ -551,6 +640,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 6.3
   vt_reference:
@@ -558,6 +648,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 6.4
   vt_reference:
@@ -565,6 +656,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 7.1
   vt_reference:
@@ -572,6 +664,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 7.2
   vt_reference:
@@ -579,6 +672,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 8.1
   vt_reference:
@@ -586,6 +680,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 8.2
   vt_reference:
@@ -593,6 +688,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 8.3
   vt_reference:
@@ -600,6 +696,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 8.4
   vt_reference:
@@ -607,6 +704,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 8.5
   vt_reference:
@@ -614,6 +712,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 9.1
   vt_reference:
@@ -621,6 +720,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 9.2
   vt_reference:
@@ -628,6 +728,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 9.3
   vt_reference:
@@ -635,6 +736,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 9.4
   vt_reference:
@@ -642,6 +744,7 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-71:
   sub_module: 10
   vt_reference:
@@ -649,142 +752,169 @@ virttest-71:
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-72:
   vt_reference:
   - virsh.attach_device_matrix
   vt_type: libvirt
   no_filter: pre_vm_state_paused.*at_okay_dt_okay
 
+---
 virttest-73:
   vt_reference:
   - virsh.autostart
   vt_type: libvirt
 
+---
 virttest-74:
   vt_reference:
   - virsh.blkdeviotune
   vt_type: libvirt
 
+---
 virttest-75:
   vt_reference:
   - virsh.blkiotune
   vt_type: libvirt
   vt_no_filter: positive.set_blkio_parameter.running_guest.change_device_weights.options,cgroup.stop
 
+---
 virttest-76:
   vt_reference:
   - virsh.console
   vt_type: libvirt
 
+---
 virttest-77:
   vt_reference:
   - virsh.cpu_stats
   vt_type: libvirt
 
+---
 virttest-78:
   vt_reference:
   - virsh.create
   vt_type: libvirt
 
+---
 virttest-79:
   vt_reference:
   - virsh.define
   vt_type: libvirt
 
+---
 virttest-80:
   vt_reference:
   - virsh.desc
   vt_type: libvirt
 
+---
 virttest-81:
   vt_reference:
   - virsh.destroy
   vt_type: libvirt
 
+---
 virttest-82:
   vt_reference:
   - virsh.detach_device
   vt_type: libvirt
   vt_no_filter: cdrom_test
 
+---
 virttest-83:
   vt_reference:
   - virsh.domid
   vt_type: libvirt
 
+---
 virttest-84:
   vt_reference:
   - virsh.domname
   vt_type: libvirt
 
+---
 virttest-85:
   vt_reference:
   - virsh.dumpxml
   vt_type: libvirt
   vt_no_filter: with_cpu
 
+---
 virttest-86:
   vt_reference:
   - virsh.edit
   vt_type: libvirt
 
+---
 virttest-87:
   vt_reference:
   - virsh.emulatorpin
   vt_type: libvirt
 
+---
 virttest-88:
   vt_reference:
   - virsh.event
   vt_type: libvirt
   vt_no_filter: crash_panic
 
+---
 virttest-89:
   vt_reference:
   - virsh.iothreadadd
   vt_type: libvirt
 
+---
 virttest-90:
   vt_reference:
   - virsh.iothreaddel
   vt_type: libvirt
 
+---
 virttest-91:
   vt_reference:
   - virsh.iothreadinfo
   vt_type: libvirt
 
+---
 virttest-92:
   vt_reference:
   - virsh.iothreadpin
   vt_type: libvirt
 
+---
 virttest-93:
   vt_reference:
   - virsh.memtune
   vt_type: libvirt
 
+---
 virttest-94:
   vt_reference:
   - virsh.metadata
   vt_type: libvirt
 
+---
 virttest-98:
   vt_reference:
   - virsh.cpu_compare
   vt_type: libvirt
   vt_no_filter: cpu64-rhel5,cpu64-rhel6
 
+---
 virttest-99:
   vt_reference:
   - virsh.cpu_baseline
   vt_type: libvirt
 
+---
 virttest-100:
   vt_reference:
   - virsh.numatune
   vt_type: libvirt
 
+---
 virttest-101:
   vt_reference:
   - virsh.domtime
@@ -792,78 +922,91 @@ virttest-101:
   vt_type: libvirt
   vt_no_filter: positive.pmsuspend_vm
 
+---
 virttest-102:
   vt_reference:
   - virsh.domuuid
   vt_name: domuuid
   vt_type: libvirt
 
+---
 virttest-103:
   vt_reference:
   - virsh.domxml_to_native
   vt_name: domxml_to_native
   vt_type: libvirt
 
+---
 virttest-104:
   vt_reference:
   - virsh.dump
   vt_name: virsh_dump
   vt_type: libvirt
 
+---
 virttest-105:
   vt_reference:
   - virsh.guestvcpus
   vt_name: virsh_guestvcpus
   vt_type: libvirt
 
+---
 virttest-106:
   vt_reference:
   - virsh.domrename
   vt_name: domrename
   vt_type: libvirt
 
+---
 virttest-107:
   vt_reference:
   - virsh.hostname
   vt_name: hostname
   vt_type: libvirt
 
+---
 virttest-108:
   vt_reference:
   - virsh.maxvcpus
   vt_name: maxvcpus
   vt_type: libvirt
 
+---
 virttest-109:
   vt_reference:
   - virsh.node_memtune
   vt_name: virsh_node_memtune
   vt_type: libvirt
 
+---
 virttest-110:
   vt_reference:
   - virsh.nodecpumap
   vt_name: nodecpumap
   vt_type: libvirt
 
+---
 virttest-111:
   vt_reference:
   - virsh.nodedev_dumpxml
   vt_name: nodedev_dumpxml
   vt_type: libvirt
 
+---
 virttest-112:
   vt_reference:
   - virsh.nodedev_event
   vt_name: nodedev_event
   vt_type: libvirt
 
+---
 virttest-113:
   vt_reference:
   - virsh.nodedev_list
   vt_name: nodedev_list
   vt_type: libvirt
 
+---
 virttest-114:
   vt_reference:
   - virtual_devices.video_devices
@@ -872,42 +1015,49 @@ virttest-114:
   vt_no_filter: qxl,vga,cirrus
   vt_only_filter: virtio.secondary_video
 
+---
 virttest-115:
   vt_reference:
   - numa
   vt_type: qemu
   vt_only_filter: numa_basic
 
+---
 virttest-116:
   vt_reference:
   - numa_opts
   vt_type: qemu
   vt_no_filter: nodes.32
 
+---
 virttest-117:
   vt_reference:
   - numa_memdev_options.numa_policy
   vt_name: numa_mem_policy
   vt_type: qemu
 
+---
 virttest-118:
   vt_reference:
   - numa_memdev_options.numa_mlock
   vt_name: numa_mem_mlock
   vt_type: qemu
 
+---
 virttest-119:
   vt_reference:
   - numa_memdev_options.numa_hugepage
   vt_name: numa_hugepage
   vt_type: qemu
 
+---
 virttest-120:
   vt_reference:
   - numa_memdev_options.numa_ram_hugepage
   vt_name: numa_ram_hugepage
   vt_type: qemu
 
+---
 virttest-121:
   vt_reference:
   - watchdog
@@ -915,153 +1065,180 @@ virttest-121:
   vt_type: qemu
   vt_no_filter: rdma,x_rdma,hotplug_unplug_watchdog_device,ib700
 
+---
 virttest-122:
   vt_reference:
   - virsh.save_image_define
   vt_type: libvirt
 
+---
 virttest-123:
   vt_reference:
   - virsh.save_image_edit
   vt_type: libvirt
 
+---
 virttest-124:
   vt_reference:
   - virsh.resume
   vt_type: libvirt
 
+---
 virttest-125:
   vt_reference:
   - virsh.restore
   vt_type: libvirt
   vt_no_filter: acl_test
 
+---
 virttest-126:
   vt_reference:
   - virsh.blockjob
   vt_type: libvirt
 
+---
 virttest-127:
   vt_reference:
   - virsh.blockcopy
   vt_type: libvirt
   vt_no_filter: acl_test,negative_test.block_lun.block_type,negative_test.block_lun.network_type,positive_test.non_acl.local_disk.blockdev.no_shallow
 
+---
 virttest-128:
   vt_reference:
   - virsh.change_media_matrix
   vt_type: libvirt
   vt_no_filter: force.action_twice.live.insert_update,config.action_twice.live_config.eject_insert
 
+---
 virttest-129:
   vt_reference:
   - virsh.blockcommit
   vt_type: libvirt
   vt_no_filter: gluster,ceph
 
+---
 virttest-130:
   vt_reference:
   - virsh.blockpull
   vt_type: libvirt
   vt_no_filter: gluster,ceph
 
+---
 virttest-131:
   vt_reference:
   - virsh.change_media
   vt_type: libvirt
   vt_no_filter: floppy_test
 
+---
 virttest-132:
   vt_reference:
   - virsh.blockresize
   vt_type: libvirt
   vt_no_filter: qed_type
 
+---
 virttest-133:
   vt_reference:
   - virsh.connect
   vt_type: libvirt
   vt_no_filter: xen_uri,lxc_uri
 
+---
 virttest-134:
   vt_reference:
   - virsh.nodedev_reset
   vt_type: libvirt
   vt_no_filter: positive_test,unresettable_device
 
+---
 virttest-135:
   vt_reference:
   - virtual_disks.at_dt_iscsi_disk
   vt_type: libvirt
   vt_no_filter: ipv6_virtio_bus,snapshot_domain,iscsi_direct_pool.ipv6_host_source_mode
 
+---
 virttest-136:
   vt_reference:
   - virtual_disks.multipath
   vt_type: libvirt
   vt_no_filter: sgio_unfiltered
 
+---
 virttest-137:
   vt_reference:
   - virtual_disks.multidisks
   vt_type: libvirt
   vt_no_filter: disk_bus_ide,disk_readonly_nfs_raw,disks_bootorder,disk_virtio_multi_ide_controller,disk_source_file_name,disk_cdrom_update_boot_order,disk_virtio_scsi_cdrom_multi_queue,disk_ide_place_correct_boot_order,disk_readonly_nfs_cdrom,virtio_disks_duplicate_wwn_cdrom,disk_nfs_pool,disk_option_bootdisk.disk_virtio_bootorder_snapshot
 
+---
 virttest-138:
   vt_reference:
   - virsh.nodedev_detach_reattach
   vt_type: libvirt
 
+---
 virttest-139:
   vt_reference:
   - virsh.qemu_agent_command_fs
   vt_type: libvirt
 
+---
 virttest-140:
   vt_reference:
   - usb_passthrough
   vt_type: libvirt
 
+---
 virttest-141:
   vt_reference:
   - kernel_panic
   vt_type: libvirt
 
+---
 virttest-142:
   vt_reference:
   - hotplug_serial
   vt_type: libvirt
 
+---
 virttest-143:
   vt_reference:
   - virsh.qemu_agent_command
   vt_type: libvirt
   vt_no_filter: async_option,normal_test.guest_sync.sync_extra,normal_test.guest_cmd_valid.no_arguments.guest_shutdown,normal_test.guest_cmd_valid.null_arguments.guest_shutdown,normal_test.guest_cmd_valid.invalid_arguments,coldplug.multi_disks_test.disks_bootorder,coldplug_only_iso,single_disk_test.disk_cdrom_update_boot_order,
 
+---
 virttest-144:
   vt_reference:
   - drive_mirror
   vt_type: qemu
   vt_no_filter: granularity,with_installation
 
+---
 virttest-145:
   vt_reference:
   - drive_mirror_negative_tests
   vt_type: qemu
   vt_no_filter: readonly_target
 
+---
 virttest-146:
   vt_reference:
   - data_plane_boot
   vt_type: qemu
   vt_no_filter: machine_type
 
+---
 virttest-147:
   vt_reference:
   - virsh.snapshot_par_cur
   vt_type: libvirt
   vt_only_filter: without_snapshot
 
+---
 virttest-148:
   vt_reference:
   - virsh.snapshot_disk
@@ -1069,18 +1246,21 @@ virttest-148:
   vt_no_filter: memory_internal,logical_pool,gluster,network_disk
   vt_only_filter: disk_external,attach_img_raw
 
+---
 virttest-149:
   vt_reference:
   - virsh.domjobabort
   vt_type: libvirt
   vt_no_filter: dump_action,migrate_option
 
+---
 virttest-151:
   vt_reference:
   - virsh.domjobinfo
   vt_type: libvirt
   vt_no_filter: dump_action
 
+---
 virttest-152:
   vt_reference:
   - sriov
@@ -1089,6 +1269,7 @@ virttest-152:
   vt_only_filter: ixgbe
   vt_env_type: 82599
 
+---
 virttest-153:
   vt_reference:
   - sriov
@@ -1098,6 +1279,7 @@ virttest-153:
   vt_only_filter: hinic
   vt_env_type: hi1822
 
+---
 virttest-154:
   vt_reference:
   - sriov_uacce
@@ -1106,6 +1288,7 @@ virttest-154:
   vt_machine_type: arm64-pci
   vt_env_type: KAE
 
+---
 virttest-155:
   vt_reference:
   - hotplug_memory
@@ -1113,6 +1296,7 @@ virttest-155:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: unplug
 
+---
 virttest-156:
   vt_reference:
   - libvirt_mem
@@ -1120,6 +1304,7 @@ virttest-156:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_only_filter: hot.plug,hot_plug
 
+---
 virttest-157:
   vt_reference:
   - cpu_hotplug_test
@@ -1127,6 +1312,7 @@ virttest-157:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: unplug
 
+---
 virttest-158:
   vt_reference:
   - cpu_device_hotplug_during_boot
@@ -1134,6 +1320,7 @@ virttest-158:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: with_unplug
 
+---
 virttest-159:
   vt_reference:
   - cpu_device_hotpluggable
@@ -1141,12 +1328,14 @@ virttest-159:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: hotunplug, with_migrate
 
+---
 virttest-160:
   vt_reference:
   - cpu_device_hotplug_maximum
   vt_type: qemu
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-161:
   vt_reference:
   - virsh.setvcpus
@@ -1154,6 +1343,7 @@ virttest-161:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: option_maxmum_config,update_max,option_maximum_config,remote,no_acpi
 
+---
 virttest-162:
   vt_reference:
   - libvirt_bench.vcpu_hotplug
@@ -1161,6 +1351,7 @@ virttest-162:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: monitor_add,monitor_del
 
+---
 virttest-163:
   vt_reference:
   - vcpu_hotpluggable
@@ -1168,17 +1359,20 @@ virttest-163:
   vt_guest_os: Guest.Linux.openEuler.20.09
   vt_no_filter: unplug.live
 
+---
 virttest-164:
   vt_reference:
   - cpu.setvcpu
   vt_type: libvirt
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-165:
   vt_reference:
   - iface_network.net_pxe
   vt_type: libvirt
 
+---
 virttest-166:
   vt_reference:
   - virsh.boot
@@ -1187,6 +1381,7 @@ virttest-166:
   vt_no_filter: by_ovmf
   vt_only_filter: cdrom
 
+---
 virttest-167:
   vt_reference:
   - migrate.default
@@ -1199,6 +1394,7 @@ virttest-167:
   vt_qemu_bin: /Images/virt-test/virt-test/qemu-kvm-aarch64
   vt_extra_params: machine_type=arm64-pci:virt-4.0
 
+---
 virttest-168:
   vt_reference:
   - migrate.default
@@ -1211,6 +1407,7 @@ virttest-168:
   vt_qemu_dst_bin: /Images/virt-test/virt-test/qemu-kvm-aarch64
   vt_extra_params: machine_type=arm64-pci:virt-4.0
 
+---
 virttest-169:
   vt_reference:
   - migrate.default
@@ -1222,6 +1419,7 @@ virttest-169:
   no_filter: rdma
   vt_qemu_bin: /Images/virt-test/virt-test/qemu-kvm-x86_64
 
+---
 virttest-170:
   vt_reference:
   - migrate.default
@@ -1233,12 +1431,14 @@ virttest-170:
   no_filter: rdma
   vt_qemu_dst_bin: /Images/virt-test/virt-test/qemu-kvm-x86_64
 
+---
 virttest-171:
   vt_reference:
   - pmu_nmi_watchdog
   vt_type: qemu
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-172:
   vt_reference:
   - cpu_custom
