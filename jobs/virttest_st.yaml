@@ -287,11 +287,6 @@ virttest-47:
   - conf_file.libvirtd_conf.unix_sock
   vt_type: libvirt
 
-virttest-48:
-  vt_reference:
-  - conf_file.libvirtd_conf.unix_sock
-  vt_type: libvirt
-
 virttest-49:
   vt_reference:
   - conf_file.qemu_conf.clear_emulator_capabilities
