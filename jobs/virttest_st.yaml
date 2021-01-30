@@ -447,7 +447,7 @@ virttest-71-1-4:
 
 virttest-71-2:
   vt_reference:
-  - virsh.attach_device.block.sigle_file
+  - virsh.attach_device.block.single_file
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
