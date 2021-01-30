@@ -4,6 +4,7 @@
 # - vt_reference
 # - vt_type
 # - vt_guest_os
+# - sub_module
 ## - vt_machine_type
 ## - vt_no_filter
 ## - vt_only_filter
