@@ -4,6 +4,7 @@ category: functional
 
 image_server: http://172.168.131.2:11300
 
+---
 virttest-0:
   vt_reference:
   - qemu_img
@@ -11,12 +12,14 @@ virttest-0:
   vt_no_filter: non-preallocated
   vt_only_filter: cluster_size_default
 
+---
 virttest-1:
   vt_reference:
   - qemu_guest_agent
   vt_type: qemu
   vt_only_filter: check_get_vcpus
 
+---
 virttest-2:
   vt_reference:
   - virtio_mode
@@ -24,16 +27,19 @@ virttest-2:
   vt_no_filter: with_netkvm,with_viorng
   vt_only_filter: with_modern
 
+---
 virttest-3:
   vt_reference:
   - ioeventfd
   vt_type: qemu
 
+---
 virttest-4:
   vt_reference:
   - qmp_basic
   vt_type: qemu
 
+---
 virttest-5:
   vt_reference:
   - virsh.reset
@@ -42,6 +48,7 @@ virttest-5:
   vt_no_filter: acl_test
   vt_only_filter: uuid_options
 
+---
 virttest-6:
   vt_reference:
   - libvirt_usb_hotplug_controller
@@ -49,23 +56,27 @@ virttest-6:
   vt_type: libvirt
   vt_only_filter: index_normal.guest_on
 
+---
 virttest-7:
   vt_reference:
   - libvirt_usb_hotplug_device
   vt_type: libvirt
   vt_only_filter: attach_device.one_count.storage
 
+---
 virttest-8:
   vt_reference:
   - numa_memory
   vt_type: libvirt
   vt_only_filter: vcpu_auto.mem_auto
 
+---
 virttest-9:
   vt_reference:
   - numa_preferred_undefine
   vt_type: libvirt
 
+---
 virttest-10:
   vt_reference:
   - virtual_disks.iscsi
@@ -74,6 +85,7 @@ virttest-10:
   vt_no_filter: test_save_snapshot,ipv6_test,auth_place_in_both_error_test
   vt_only_filter: normal_test.device_disk.auth_uuid
 
+---
 virttest-11:
   vt_reference:
   - virtual_disks.usb
@@ -82,6 +94,7 @@ virttest-11:
   vt_no_filter: companion_model,qemu-xhci_model
   vt_only_filter: virtual_disks.usb.hotplug.usb2_0,virtual_disks.usb.hotplug.usb3_0
 
+---
 virttest-12:
   vt_reference:
   - virtual_devices.input_devices
@@ -90,6 +103,7 @@ virttest-12:
   vt_no_filter: bus_type_ps2.input_type_mouse,bus_type_ps2.input_type_keyboard
   vt_only_filter: bus_type_virtio.input_type_tablet
 
+---
 virttest-13:
   vt_reference:
   - virsh.save
@@ -97,6 +111,7 @@ virttest-13:
   vt_type: libvirt
   vt_only_filter: normal_test.normal_option.running_option.no_progress
 
+---
 virttest-14:
   vt_reference:
   - virsh.schedinfo_qemu_posix
@@ -104,6 +119,7 @@ virttest-14:
   vt_type: libvirt
   vt_only_filter: set_cpu_param.set_cpu_shares.value_normal.set_by_cmd.current.valid_domname,set_emulator_param.set_emulator_period.value_min.valid_domid
 
+---
 virttest-15:
   vt_reference:
   - virsh.start
@@ -111,6 +127,7 @@ virttest-15:
   vt_type: libvirt
   vt_only_filter: normal_start
 
+---
 virttest-16:
   vt_reference:
   - virsh.suspend
@@ -118,6 +135,7 @@ virttest-16:
   vt_type: libvirt
   vt_only_filter: normal_test.non_acl.name_option
 
+---
 virttest-17:
   vt_reference:
   - virsh.undefine
@@ -126,6 +144,7 @@ virttest-17:
   vt_no_filter: remove_storage
   vt_only_filter: normal_test.vm_running.no_option
 
+---
 virttest-18:
   vt_reference:
   - virsh.domstats
@@ -134,6 +153,7 @@ virttest-18:
   vt_no_filter: not_enforce,raw_print
   vt_only_filter: normal_test.domain_state.persistent
 
+---
 virttest-19:
   vt_reference:
   - virsh.dommemstat
@@ -141,6 +161,7 @@ virttest-19:
   vt_type: libvirt
   vt_only_filter: normal_test.name_option
 
+---
 virttest-20:
   vt_reference:
   - virsh.dominfo
@@ -148,6 +169,7 @@ virttest-20:
   vt_type: libvirt
   vt_only_filter: normal_test.uuid_option
 
+---
 virttest-21:
   vt_reference:
   - virsh.domifstat
@@ -155,6 +177,7 @@ virttest-21:
   vt_type: libvirt
   vt_only_filter: normal_test.name_option
 
+---
 virttest-22:
   vt_reference:
   - virsh.domblkstat
@@ -162,6 +185,7 @@ virttest-22:
   vt_type: libvirt
   vt_only_filter: normal_test.name_option
 
+---
 virttest-23:
   vt_reference:
   - virsh.uri
@@ -169,6 +193,7 @@ virttest-23:
   vt_type: libvirt
   vt_only_filter: no_option
 
+---
 virttest-24:
   vt_reference:
   - virsh.sysinfo
@@ -176,12 +201,14 @@ virttest-24:
   vt_type: libvirt
   vt_only_filter: normal_test.no_option
 
+---
 virttest-25:
   vt_reference:
   - virsh.nodememstats
   vt_name: virsh_nodememstats
   vt_type: libvirt
 
+---
 virttest-26:
   vt_reference:
   - virsh.nodeinfo
@@ -189,6 +216,7 @@ virttest-26:
   vt_type: libvirt
   vt_only_filter: no_option
 
+---
 virttest-27:
   vt_reference:
   - virsh.nodecpustats
@@ -196,6 +224,7 @@ virttest-27:
   vt_type: libvirt
   vt_only_filter: with_libvirtd_stop
 
+---
 virttest-28:
   vt_reference:
   - virsh.domcapabilities
@@ -203,6 +232,7 @@ virttest-28:
   vt_type: libvirt
   vt_only_filter: local_host.default_option_values
 
+---
 virttest-29:
   vt_reference:
   - virsh.cpu_models
@@ -210,6 +240,7 @@ virttest-29:
   vt_type: libvirt
   vt_only_filter: positive_test.local_host
 
+---
 virttest-30:
   vt_reference:
   - virsh.capabilities
@@ -217,6 +248,7 @@ virttest-30:
   vt_type: libvirt
   vt_only_filter: no_option
 
+---
 virttest-31:
   vt_reference:
   - virsh.vncdisplay
@@ -224,6 +256,7 @@ virttest-31:
   vt_type: libvirt
   vt_only_filter: normal_test.name_option
 
+---
 virttest-32:
   vt_reference:
   - virsh.vcpupin
@@ -232,6 +265,7 @@ virttest-32:
   vt_no_filter: multi_dom
   vt_only_filter: online.positive_test.cpu_list.cpu_list_x-y
 
+---
 virttest-33:
   vt_reference:
   - virsh.vcpuinfo
@@ -239,6 +273,7 @@ virttest-33:
   vt_type: libvirt
   vt_only_filter: normal_test.id_option
 
+---
 virttest-34:
   vt_reference:
   - channel.functional
@@ -247,6 +282,7 @@ virttest-34:
   vt_no_filter: target_name_not_set.unix_type,auto_gen_port.pty_type,target_guestfwd.pty_type,target_name_not_set
   vt_only_filter: positive_tests.target_virtio.autopath_on
 
+---
 virttest-35:
   vt_reference:
   - guestpin
@@ -254,12 +290,14 @@ virttest-35:
   vt_no_filter: with_cpu_hotplug
   vt_only_filter: randompin.positive.iteration
 
+---
 virttest-36:
   vt_reference:
   - max_vcpus
   vt_type: libvirt
   vt_no_filter: virsh_maxvcpus
 
+---
 virttest-37:
   vt_reference:
   - vcpu_affinity
@@ -267,12 +305,14 @@ virttest-37:
   vt_no_filter: vcpu_affinity_xml,vcpu_affinity_active,vcpu_affinity_config,invalid_cpuset,outrange_cpuset,offline_hostcpu,none_exist_vcpu
   vt_only_filter: positive_test.cputune
 
+---
 virttest-38:
   vt_reference:
   - daemon.functional
   vt_type: libvirt
   vt_only_filter: daemon.functional.opt_pid
 
+---
 virttest-39:
   vt_reference:
   - graphics.functional
@@ -280,12 +320,14 @@ virttest-39:
   vt_no_filter: vnc_listen_ipv6,set_passwd
   vt_only_filter: positive_tests.vnc_only.no_autoport
 
+---
 virttest-40:
   vt_reference:
   - libvirt_hugepage
   vt_type: libvirt
   vt_only_filter: normal.with_mb.trans_enable
 
+---
 virttest-41:
   vt_reference:
   - guest_numa
@@ -293,22 +335,26 @@ virttest-41:
   vt_no_filter: 1G,16M
   vt_only_filter: topology.numatune_memnode.m_preferred.numatune_mem
 
+---
 virttest-42:
   vt_reference:
   - numa_capabilities
   vt_type: libvirt
 
+---
 virttest-43:
   vt_reference:
   - numa_memory
   vt_type: libvirt
   vt_only_filter: possitive_test.vcpu.vcpu_static.mem_auto
 
+---
 virttest-44:
   vt_reference:
   - numa_preferred_undefine
   vt_type: libvirt
 
+---
 virttest-45:
   vt_reference:
   - timer_management
@@ -316,6 +362,7 @@ virttest-45:
   vt_no_filter: kvmclock,hpet,hpet_tsc,multi_timer,pit,platform
   vt_only_filter: present_yes.offset_variable.no_stress.test_specific_timer
 
+---
 virttest-46:
   vt_reference:
   - virsh.attach_detach_disk
@@ -323,6 +370,7 @@ virttest-46:
   vt_no_filter: block_disk_type_lun,audit_check,block_disk_type_logical
   vt_only_filter: attach_disk.normal_test.attach_disk_type
 
+---
 virttest-47:
   vt_reference:
   - virsh.attach_detach_disk_matrix
@@ -330,6 +378,7 @@ virttest-47:
   vt_no_filter: at_okay_dt_error
   vt_only_filter: pre_vm_state_running.at_option_live
 
+---
 virttest-48-1:
   vt_reference:
   - virsh.attach_detach_interface
@@ -337,6 +386,7 @@ virttest-48-1:
   vt_only_filter: normal_test.vm_running.exist_bridge
   vt_no_filter: domid
 
+---
 virttest-48-2:
   vt_reference:
   - virsh.attach_detach_interface
@@ -344,6 +394,7 @@ virttest-48-2:
   vt_only_filter: normal_test.vm_running.exist_bridge.domid
   vt_guest_os: Guest.Linux.openEuler.20.09
 
+---
 virttest-49:
   vt_reference:
   - virsh.attach_detach_interface_matrix
@@ -351,6 +402,7 @@ virttest-49:
   vt_no_filter: at_okay_dt_error
   vt_only_filter: pre_vm_state_running.at_option_live.dt_option_live
 
+---
 virttest-50:
   vt_reference:
   - virsh.attach_device.block
@@ -359,6 +411,7 @@ virttest-50:
   vt_only_filter: single_virtio_file.with_alias.normal_test.hot_attach_hot_vm.persistent.id_ref,single_scsi_file.with_alias.normal_test.hot_attach_hot_vm.persistent.id_ref
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
+---
 virttest-51:
   vt_reference:
   - virsh.attach_device_matrix
@@ -368,18 +421,21 @@ virttest-51:
   no_filter: pre_vm_state_paused.*at_okay_dt_okay
   only_filter: virsh.attach_device_matrix.pre_vm_state_running.at_option_default
 
+---
 virttest-52:
   vt_reference:
   - virsh.autostart
   vt_type: libvirt
   vt_only_filter: positive_test.set_autostart
 
+---
 virttest-53:
   vt_reference:
   - virsh.blkdeviotune
   vt_type: libvirt
   vt_only_filter: virsh.blkdeviotune.positive_testing.set_blkdevio_parameter.running_guest.change_total_bytes_sec.options.current
 
+---
 virttest-54:
   vt_reference:
   - virsh.blkiotune
@@ -387,36 +443,42 @@ virttest-54:
   vt_no_filter: positive.set_blkio_parameter.running_guest.change_device_weights.options,cgroup.stop
   vt_only_filter: positive.set_blkio_parameter.running_guest.change_weight.options.current
 
+---
 virttest-55:
   vt_reference:
   - virsh.console
   vt_type: libvirt
   vt_only_filter: normal_test.acl_test.valid_domuuid
 
+---
 virttest-56:
   vt_reference:
   - virsh.cpu_stats
   vt_type: libvirt
   vt_only_filter: positive_test.option1
 
+---
 virttest-57:
   vt_reference:
   - virsh.create
   vt_type: libvirt
   vt_only_filter: console
 
+---
 virttest-58:
   vt_reference:
   - virsh.desc
   vt_type: libvirt
   vt_only_filter: virsh.desc.positive_test.no_option
 
+---
 virttest-59:
   vt_reference:
   - virsh.destroy
   vt_type: libvirt
   vt_only_filter: normal_test.acl_test.id_option
 
+---
 virttest-60:
   vt_reference:
   - virsh.detach_device
@@ -424,6 +486,7 @@ virttest-60:
   vt_no_filter: cdrom_test
   vt_only_filter: normal_test.vm_running_current.disk_test
 
+---
 virttest-61:
   vt_reference:
   - virsh.event
@@ -431,42 +494,49 @@ virttest-61:
   vt_no_filter: crash_panic
   vt_only_filter: positive_test.qemu_monitor_event.pretty_option.reboot_event.timeout.loop
 
+---
 virttest-62:
   vt_reference:
   - virsh.iothreadadd
   vt_type: libvirt
   vt_only_filter: normal_test.guest_on.uuid_option
 
+---
 virttest-63:
   vt_reference:
   - virsh.iothreaddel
   vt_type: libvirt
   vt_only_filter: normal_test.guest_on.id_option.option_live
 
+---
 virttest-64:
   vt_reference:
   - virsh.iothreadpin
   vt_type: libvirt
   vt_only_filter: normal_test.guest_on.name_option
 
+---
 virttest-65:
   vt_reference:
   - virsh.memtune
   vt_type: libvirt
   vt_only_filter: memtune.positive_test.normal_1
 
+---
 virttest-66:
   vt_reference:
   - virsh.metadata
   vt_type: libvirt
   vt_only_filter: positive_test.live_option
 
+---
 virttest-68:
   vt_reference:
   - virsh.numatune
   vt_type: libvirt
   vt_only_filter: positive_testing.set_numa_parameter.running_guest.change_nodeset.options.current
 
+---
 virttest-69:
   vt_reference:
   - virtual_devices.video_devices
@@ -475,65 +545,76 @@ virttest-69:
   vt_no_filter: qxl,vga,cirrus
   vt_only_filter: positive_test.primary_video.virtio.secondary_video.virtio.model_test
 
+---
 virttest-70:
   vt_reference:
   - virsh.snapshot_disk
   vt_type: libvirt
   vt_only_filter: no_delete.negative_test.pool_vol.disk_pool.attach_img_raw.snapshot_default.current
 
+---
 virttest-71:
   vt_reference:
   - virsh.snapshot_par_cur
   vt_type: libvirt
   vt_only_filter: snapshot_par_cur.negative_tests_current.without_snapshot
 
+---
 virttest-72:
   vt_reference:
   - virsh.restore
   vt_type: libvirt
   vt_only_filter: no_option
 
+---
 virttest-73:
   vt_reference:
   - virsh.resume
   vt_type: libvirt
   vt_only_filter: normal_test.vm_paused.valid_domname
 
+---
 virttest-74:
   vt_reference:
   - virsh.save_image_define
   vt_type: libvirt
 
+---
 virttest-75:
   vt_reference:
   - virsh.blockresize
   vt_type: libvirt
   vt_only_filter: normal_test.byte.raw_type
 
+---
 virttest-76:
   vt_reference:
   - virtual_disks.at_dt_iscsi_disk
   vt_type: libvirt
   vt_only_filter: hot_plug.volume_disk.iscsi_pool.ipv4_host_source_mode,cold_plug.volume_disk.iscsi_pool.save_domain
 
+---
 virttest-77:
   vt_reference:
   - virtual_disks.multipath
   vt_type: libvirt
   vt_only_filter: rawio_yes.sgio_filtered.hotplug
 
+---
 virttest-78:
   vt_reference:
   - virtual_disks.multidisks
   vt_type: libvirt
   vt_only_filter: coldplug.single_disk_test.disk_bus_device_option.disk_bus_virtio.device_lun.default
 
+---
 virttest-79:
   vt_reference:
   - virsh.nodedev_detach_reattach
   vt_type: libvirt
   vt_only_filter: positive.normal_test
 
+---
 virttest-80:
   vt_reference:
   - watchdog
@@ -542,12 +623,14 @@ virttest-80:
   vt_no_filter: rdma,x_rdma,hotplug_unplug_watchdog_device,ib700,noaction,debug,pause_guest
   vt_only_filter: watchdog_action
 
+---
 virttest-81:
   vt_reference:
   - iface_network.net_pxe.default
   vt_name: iface_network.net_pxe
   vt_type: libvirt
 
+---
 virttest-82:
   vt_reference:
   - virsh.boot
@@ -556,6 +639,7 @@ virttest-82:
   vt_machine_type: arm64-pci
   vt_only_filter: virsh.boot.by_edk.positive_test.options.boot.cdrom.boot_dev.os_nvram.no_template.os_loader.valid_loader_type.valid_readonly
 
+---
 virttest-83:
   vt_reference:
   - virsh.boot
@@ -564,6 +648,7 @@ virttest-83:
   vt_machine_type: q35
   vt_only_filter: virsh.boot.by_seabios.positive_test.options.boot.cdrom.boot_dev.os_loader.valid_loader_type.valid_readonly
 
+---
 virttest-84:
   vt_reference:
   - migrate.default.tcp.default
@@ -574,6 +659,7 @@ virttest-84:
   vt_qemu_bin: /Images/virt-test/virt-test/qemu-kvm-aarch64
   vt_extra_params: machine_type=arm64-pci:virt-4.0
 
+---
 virttest-85:
   vt_reference:
   - migrate.default.tcp.default
@@ -584,6 +670,7 @@ virttest-85:
   vt_qemu_dst_bin: /Images/virt-test/virt-test/qemu-kvm-aarch64
   vt_extra_params: machine_type=arm64-pci:virt-4.0
 
+---
 virttest-86:
   vt_reference:
   - migrate.default.tcp.default
@@ -593,6 +680,7 @@ virttest-86:
   vt_machine_type: q35
   vt_qemu_bin: /Images/virt-test/virt-test/qemu-kvm-x86_64
 
+---
 virttest-87:
   vt_reference:
   - migrate.default.tcp.default
