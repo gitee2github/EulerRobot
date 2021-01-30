@@ -402,13 +402,15 @@ virttest-68:
   - virsh.attach_detach_disk_matrix
   vt_type: libvirt
 
-virttest-69-1:
+virttest-69:
+  sub_module: 1
   vt_reference:
   - virsh.attach_detach_interface
   vt_type: libvirt
   vt_no_filter: domid
 
-virttest-69-2:
+virttest-69:
+  sub_module: 2
   vt_reference:
   - virsh.attach_detach_interface
   vt_type: libvirt
@@ -421,199 +423,232 @@ virttest-70:
   vt_type: libvirt
   vt_no_filter: kvmclock,hpet
 
-virttest-71-1-1:
+virttest-71:
+  sub_module: 1.1
   vt_reference:
   - virsh.attach_device.block.multi_virtio_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-1-2:
+virttest-71:
+  sub_module: 1.2
   vt_reference:
   - virsh.attach_device.block.multi_virtio_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-1-3:
+virttest-71:
+  sub_module: 1.3
   vt_reference:
   - virsh.attach_device.block.multi_virtio_file.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-1-4:
+virttest-71:
+  sub_module: 1.4
   vt_reference:
   - virsh.attach_device.block.multi_virtio_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-2:
+virttest-71:
+  sub_module: 2
   vt_reference:
   - virsh.attach_device.block.single_file
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-3-1:
+virttest-71:
+  sub_module: 3.1
   vt_reference:
   - virsh.attach_device.block.single_scsi_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-3-2:
+virttest-71:
+  sub_module: 3.2
   vt_reference:
   - virsh.attach_device.block.single_scsi_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-3-3:
+virttest-71:
+  sub_module: 3.3
   vt_reference:
   - virsh.attach_device.block.single_scsi_file.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-3-4:
+virttest-71:
+  sub_module: 3.4
   vt_reference:
   - virsh.attach_device.block.single_scsi_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-4-1:
+virttest-71:
+  sub_module: 4.1
   vt_reference:
   - virsh.attach_device.block.single_usb_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-4-2:
+virttest-71:
+  sub_module: 4.2
   vt_reference:
   - virsh.attach_device.block.single_usb_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-4-3:
+virttest-71:
+  sub_module: 4.3
   vt_reference:
   - virsh.attach_device.block.single_usb_file.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-4-4:
+virttest-71:
+  sub_module: 4.4
   vt_reference:
   - virsh.attach_device.block.single_usb_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-5-1:
+virttest-71:
+  sub_module: 5.1
   vt_reference:
   - virsh.attach_device.block.single_virtio_file.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-5-2:
+virttest-71:
+  sub_module: 5.2
   vt_reference:
   - virsh.attach_device.block.single_virtio_file.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-5-3:
+virttest-71:
+  sub_module: 5.3
   vt_reference:
   - virsh.attach_device.block.single_virtio_file.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-5-4:
+virttest-71:
+  sub_module: 5.4
   vt_reference:
   - virsh.attach_device.block.single_virtio_file.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-6-1:
+virttest-71:
+  sub_module: 6.1
   vt_reference:
   - virsh.attach_device.character.channel.type_pty.with_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-6-2:
+virttest-71:
+  sub_module: 6.2
   vt_reference:
   - virsh.attach_device.character.channel.type_pty.without_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-6-3:
+virttest-71:
+  sub_module: 6.3
   vt_reference:
   - virsh.attach_device.character.channel.type_unix.with_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-6-4:
+virttest-71:
+  sub_module: 6.4
   vt_reference:
   - virsh.attach_device.character.channel.type_unix.without_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-7-1:
+virttest-71:
+  sub_module: 7.1
   vt_reference:
   - virsh.attach_device.character.console.type_pty.with_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-7-2:
+virttest-71:
+  sub_module: 7.2
   vt_reference:
   - virsh.attach_device.character.console.type_pty.without_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8-1:
+virttest-71:
+  sub_module: 8.1
   vt_reference:
   - virsh.attach_device.character.serial.single_serial.with_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8-2:
+virttest-71:
+  sub_module: 8.2
   vt_reference:
   - virsh.attach_device.character.serial.single_serial.without_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8-3:
+virttest-71:
+  sub_module: 8.3
   vt_reference:
   - virsh.attach_device.character.serial.multi_serial.with_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8-4:
+virttest-71:
+  sub_module: 8.4
   vt_reference:
   - virsh.attach_device.character.serial.multi_serial.without_alias
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-8-5:
+virttest-71:
+  sub_module: 8.5
   vt_reference:
   - virsh.attach_device.character.serial.multi_type
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-9-1:
+virttest-71:
+  sub_module: 9.1
   vt_reference:
   - virsh.attach_device.controller.type_scsi.with_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-9-2:
+virttest-71:
+  sub_module: 9.2
   vt_reference:
   - virsh.attach_device.controller.type_scsi.with_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-9-3:
+virttest-71:
+  sub_module: 9.3
   vt_reference:
   - virsh.attach_device.controller.type_scsi.without_alias.normal_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-9-4:
+virttest-71:
+  sub_module: 9.4
   vt_reference:
   - virsh.attach_device.controller.type_scsi.without_alias.error_test
   vt_type: libvirt
   no_filter: hot_attach_hot_vm.*block.*virtio_file
 
-virttest-71-10:
+virttest-71:
+  sub_module: 10
   vt_reference:
   - virsh.attach_device.multiple
   vt_type: libvirt
