@@ -196,6 +196,7 @@ config_qemu_san() {
     source $profile
     mkdir -p /home/sanlog
     chmod 777 /home/sanlog/
+    touch $lsan_file
     yum install -y libasan
 }  
 
