@@ -7,8 +7,18 @@ license=('GPL' 'GPL' 'GPL' 'GPL' 'GPL')
 source=("https://gitee.com/openeuler/avocado.git" "https://gitee.com/openeuler/avocado-vt.git" "https://gitee.com/openeuler/tp-qemu.git" "https://gitee.com/openeuler/tp-libvirt.git" "https://gitee.com/openeuler/EulerRobot.git")
 md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP') 
 
+if [ x$qemu_san == x"enable" -a x$upstream_qemu_san == x"enable" ]; then
+    upstream_qemu_san=""
+fi
+
 if [ x$qemu_san == x"enable" ]; then
     source=(${source[*]} "https://gitee.com/src-openeuler/qemu.git")
+    license=(${license[*]} 'GPL')
+    md5sums=(${md5sums[*]} 'SKIP')
+fi
+
+if [ x$upstream_qemu_san == x"enable" ]; then
+    source=(${source[*]} "https://gitee.com/openeuler/qemu.git")
     license=(${license[*]} 'GPL')
     md5sums=(${md5sums[*]} 'SKIP')
 fi
@@ -65,10 +75,157 @@ qemu_asan_build() {
     rpmbuild -ba ${qemu_spec} || exit $?
 }
 
+install_upstream_qemu_depends() {
+    mkdir $TMP/qemu_depends/
+    sudo yum install -y \
+        ninja-build \
+        diffutils \
+        gcc \
+        git \
+        make \
+        bison \
+        brlapi-devel \
+        bzip2-devel \
+        chrpath \
+        cyrus-sasl-devel \
+        device-mapper-multipath-devel \
+        flex \
+        gettext \
+        gnutls-devel \
+        gtk3-devel \
+        kernel \
+        libaio-devel \
+        libattr-devel \
+        libcap-devel \
+        libcap-ng-devel \
+        libcurl-devel \
+        libepoxy-devel \
+        libfdt-devel \
+        libiscsi-devel \
+        libjpeg-devel \
+        libpng-devel \
+        librbd-devel \
+        libseccomp-devel \
+        libtasn1-devel \
+        libudev-devel \
+        libusbx-devel \
+        libxml2-devel \
+        lzo-devel \
+        ncurses-devel \
+        numactl-devel \
+        pam-devel \
+        perl-Test-Harness \
+        perl-podlators \
+        pixman-devel \
+        python-sphinx \
+        python3-devel \
+        rdma-core-devel \
+        snappy-devel \
+        systemd-devel \
+        texinfo \
+        usbredir-devel \
+        virglrenderer-devel \
+        zlib-devel \
+        libusb-devel \
+        xfsprogs-devel \
+        device-mapper-devel \
+        libgcrypt-devel \
+        libasan \
+        --downloadonly --downloaddir=$TMP/qemu_depends
+    sudo rpm -ivh --force --nodeps $TMP/qemu_depends/*.rpm
+}
+
+build_upstream_qemu_asan() {
+    cd ${srcdir}/qemu
+    git checkout -f master
+    sed -i 's/git.qemu.org\/git/gitee.com\/EulerRobot/g' .gitmodules
+    git submodule update --init --recursive capstone
+    git submodule update --init --recursive dtc
+    git submodule update --init --recursive meson
+    git submodule update --init --recursive slirp
+    git submodule update --init --recursive tests/fp/berkeley-softfloat-3
+    git submodule update --init --recursive tests/fp/berkeley-testfloat-3
+    git submodule update --init --recursive ui/keycodemapdb
+    mkdir openEuler-linux-gnu
+    cd openEuler-linux-gnu
+
+    ../configure \
+        --extra-cflags="-O2 -g -pipe -Wall -Wno-error -Wimplicit-fallthrough=0 -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -fasynchronous-unwind-tables -fstack-clash-protection -fPIE -DPIE -fPIC" \
+        --enable-modules \
+        --enable-qom-cast-debug \
+        --enable-vnc \
+        --enable-debug-tcg \
+        --enable-debug \
+        --enable-vnc-sasl \
+        --enable-vnc-jpeg \
+        --enable-vnc-png \
+        --enable-kvm \
+        --enable-linux-user \
+        --enable-xkbcommon \
+        --enable-vhost-user \
+        --enable-vhost-kernel \
+        --enable-sheepdog \
+        --enable-parallels \
+        --enable-qed \
+        --enable-vvfat \
+        --enable-vdi \
+        --enable-qcow1 \
+        --enable-dmg \
+        --enable-cloop \
+        --enable-bochs \
+        --enable-replication \
+        --enable-libxml2 \
+        --enable-numa \
+        --enable-live-block-migration \
+        --enable-tpm \
+        --enable-pvrdma \
+        --enable-rdma \
+        --enable-auth-pam \
+        --enable-gcrypt \
+        --enable-gnutls \
+        --enable-tools \
+        --enable-guest-agent \
+        --enable-bzip2 \
+        --enable-libusb \
+        --enable-hax \
+        --enable-cap-ng \
+        --enable-libiscsi \
+        --enable-gtk \
+        --enable-bsd-user \
+        --enable-curses \
+        --enable-iconv \
+        --enable-curl \
+        --enable-fdt \
+        --enable-linux-aio \
+        --enable-attr  \
+        --enable-crypto-afalg \
+        --enable-vhost-net \
+        --enable-vhost-crypto \
+        --enable-vhost-scsi \
+        --enable-vhost-vsock \
+        --enable-vhost-user-fs \
+        --enable-xfsctl \
+        --enable-libusb \
+        --enable-guest-agent \
+        --enable-plugins \
+        --enable-xkbcommon \
+        --enable-capstone \
+        --enable-live-block-migration \
+        --enable-virtfs \
+        --enable-sanitizers \
+        || (cat config.log; exit 1)
+
+    make -j 60
+}
+
 build() {
     install_virttest "openEuler-20.03"
     if [ x$qemu_san == x"enable" ]; then
         qemu_asan_build
+    fi
+    if [ x$upstream_qemu_san == x"enable" ]; then
+        install_upstream_qemu_depends
+        build_upstream_qemu_asan
     fi
 }
 
@@ -105,10 +262,19 @@ san_rpm_copy() {
     cp -rf "/root/rpmbuild/RPMS/noarch/"* "${pkgdir}/virttest_san_rpm/"
 }
 
+upstream_qemu_copy() {
+    mkdir -p "${pkgdir}/usr/libexec/upstream_qemu"
+    cp -a "${srcdir}/qemu/openEuler-linux-gnu/qemu-system-$(arch)" "${pkgdir}/usr/libexec/upstream_qemu"
+    cp -a "${srcdir}/qemu/openEuler-linux-gnu/qemu-img" "${pkgdir}/usr/libexec/upstream_qemu"
+
 package() {
     lkp_virttest_copy
     avocado_copy
     if [ x$qemu_san == x"enable" ]; then
         san_rpm_copy
     fi
+    if [ x$upstream_qemu_san == x"enable" ]; then
+        upstream_qemu_copy
+    fi
 }
+
