@@ -212,6 +212,7 @@ prepare_qemu_san() {
 prepare_upstream_qemu_san() {
     upstream_qemu_path="/usr/libexec/upstream_qemu"
     if [ x$upstream_qemu_san == x"enable" ] && [ ! -h /usr/libexec/qemu-kvm ] && [ x$qemu_san != x"enable" ]; then
+        [ -d $upstream_qemu_path ] || die "Makepkg is short of upstream qemu san file and needs to be remakepkg with upstream_qemu_san enable"
         ln -sf $upstream_qemu_path/qemu-system-$arch /usr/libexec/qemu-kvm
         ln -sf $upstream_qemu_path/qemu-img $(which qemu-img) 
         config_qemu_san
