@@ -189,24 +189,40 @@ config_virttest() {
     sed -i 's/^# \(migrate_dest_pwd = "${remote_pwd}"\)/\1/' $libvirt_base_cfg
 }
 
+config_qemu_san() {
+    profile=/etc/profile
+    lsan_file=/home/suppfile
+    echo "export LSAN_OPTIONS=suppressions=$lsan_file" >> $profile
+    echo "export ASAN_OPTIONS=detect_leaks=1:halt_on_error=0:log_path=/home/sanlog/:log_exe_name=1:disable_coredump=0:fast_unwind_on_malloc=0" >> $profile
+    source $profile
+    mkdir -p /home/sanlog
+    chmod 777 /home/sanlog/
+    touch $lsan_file
+    yum install -y libasan
+}  
+
 prepare_qemu_san() {
     if [ x$qemu_san == x"enable" ] && [ ! -d /virttest_san_rpm_bak ]; then
         [ -d /virttest_san_rpm ] || die "Makepkg is short of san packages and needs to be remakepkg with qemu_san/libvirt_san enable"
         rpm -Uvh /virttest_san_rpm/*.rpm --force || exit $?
-        # config qemu asan
-        profile=/etc/profile
-        echo "export LSAN_OPTIONS=suppressions=/home/suppfile" >> $profile
-        echo "export ASAN_OPTIONS=detect_leaks=1:halt_on_error=0:log_path=/home/sanlog/:log_exe_name=1:disable_coredump=0:fast_unwind_on_malloc=0" >> $profile
-        source $profile
-        mkdir -p /home/sanlog
-        chmod 777 /home/sanlog/
+        config_qemu_san
         mv /virttest_san_rpm /virttest_san_rpm_bak
+    fi
+}
+
+prepare_upstream_qemu_san() {
+    upstream_qemu_path="/usr/libexec/upstream_qemu"
+    if [ x$upstream_qemu_san == x"enable" ] && [ ! -h /usr/libexec/qemu-kvm ] && [ x$qemu_san != x"enable" ]; then
+        [ -d $upstream_qemu_path ] || die "Makepkg is short of upstream qemu san file and needs to be remakepkg with upstream_qemu_san enable"
+        ln -sf $upstream_qemu_path/qemu-system-$arch /usr/libexec/qemu-kvm
+        ln -sf $upstream_qemu_path/qemu-img $(which qemu-img) 
+        config_qemu_san
     fi
 }
 
 # upload sanlog
 upload_sanlog() {
-    if [ x$qemu_san == x"enable" ]; then
+    if [ x$qemu_san == x"enable" -o x$upstream_qemu_san == x"enable" ]; then
         echo "$vt_reference" > "/home/sanlog/date.log"
         upload_files -t results "/home/sanlog"
         rm -rf /home/sanlog/*
@@ -233,6 +249,9 @@ config_qemu_conf() {
     if [ ! -e /etc/libvirt/qemu.conf.bak_by_CI ];then
         cp /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.bak_by_CI
         sed -i 's/^#user/user/;s/^#group/group/' /etc/libvirt/qemu.conf
+        if [ x$upstream_qemu_san == x"enable" ] && [ x$qemu_san != x"enable" ]; then
+            sed -i 's/\#seccomp_sandbox = 1/seccomp_sandbox = 0/g' /etc/libvirt/qemu.conf
+        fi
     fi
 }
 
@@ -387,6 +406,7 @@ run_reference_test() {
 }
 
 prepare_qemu_san
+prepare_upstream_qemu_san
 config_bash_prompt
 config_umask
 config_qemu_conf
