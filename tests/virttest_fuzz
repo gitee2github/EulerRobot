@@ -1,0 +1,119 @@
+#!/bin/bash
+# - repo_name
+# - repo_url
+# - repo_branch
+# - sleep_time
+
+. $LKP_SRC/lib/debug.sh
+. $LKP_SRC/lib/env.sh
+. $LKP_SRC/lib/upload.sh
+
+[ -n "$repo_name" ] || die "repo_name is empty"
+[ -n "$repo_url" ] || die "repo_url is empty"
+[ -n "$repo_branch" ] || die "repo_branch is empty"
+[ -n "$sleep_time" ] || die "sleep_time is empty"
+
+workdir=$(pwd)
+
+add_dependency() {
+    yum install -y \
+        compiler-rt \
+        clang \
+        libasan \
+        git \
+        make \
+        python-pip \
+        cmake \
+        glib2-devel \
+        pixman-devel \
+        diffutils \
+        tar \
+        ninja-build
+}
+
+build() {
+    git clone $repo_url
+    cd $repo_name
+    git checkout $repo_branch
+
+    page_size=`getconf PAGESIZE`
+    case $page_size in
+    16384)
+        sed -i 's/4K/16K/g' tests/qtest/fuzz/fork_fuzz.ld
+    ;;
+    65536)
+        sed -i 's/4K/64K/g' tests/qtest/fuzz/fork_fuzz.ld
+    ;;
+    esac
+
+    mkdir build && cd build
+    CC=clang CXX=clang++ \
+        ../configure \
+        --enable-fuzzing \
+        --enable-sanitizers
+
+    make qemu-fuzz-x86_64 -j
+}
+
+run_test() {
+    export ASAN_OPTIONS=detect_leaks=1
+    export ASAN_OPTIONS=$ASAN_OPTIONS:halt_on_error=0
+    export ASAN_OPTIONS=$ASAN_OPTIONS:log_exe_name=1
+    export ASAN_OPTIONS=$ASAN_OPTIONS:disable_coredump=0
+    export ASAN_OPTIONS=$ASAN_OPTIONS:fast_unwind_on_malloc=0
+
+    if [ -d "$workdir/result" ]
+    then
+        rm -rf result
+    fi
+    mkdir -p $workdir/result/log
+
+    pid_list=()
+    for i in `./qemu-fuzz-x86_64 | grep "\*" | grep -v "generic-fuzz  " | awk '{print $2}'`
+    do
+        nohup ./qemu-fuzz-x86_64 --fuzz-target=$i &> $workdir/result/log/$i.log &
+        pid=`echo $!`
+        pid_list=(${pid_list[@]} $pid)
+    done
+
+    sleep $1
+}
+
+collect_results() {
+    for i in ${pid_list[@]}
+    do
+        kill -9 $i
+    done
+
+    mkdir -p $workdir/result/crash/data
+
+    for i in `ls $workdir/result/log`
+    do
+        err=`cat $workdir/result/log/$i | grep -i error`
+        if [ -z $err ]
+        then
+            echo "[FUZZ_TEST]${i%.*}: OK" >> $workdir/result/SUMMARY
+        else
+            crash_id=`cat $workdir/result/log/$i | grep crash`
+            if [ -z $crash_id ]
+            then
+                echo "[FUZZ_TEST]${i%.*}: ERROR" >> $workdir/result/SUMMARY
+            else
+                echo "[FUZZ_TEST]${i%.*}: ERROR (use the files in crash_list_${i%.*} to reproduce)" >> $workdir/result/SUMMARY
+                echo $crash_id | awk '{for (f=1; f<= NF; f+=1) {if ($f ~ /crash-/) {print $f}}}' >> $workdir/result/crash/crash_list_${i%.*}
+            fi
+        fi
+    done
+
+    mv $workdir/$repo_name/build/crash* $workdir/result/crash/data
+    cd $workdir/result/crash
+    tar -zcvf data.tar.gz data
+    rm -rf $workdir/result/crash/data
+    upload_files -t result $workdir/result/*
+    rm -rf $workdir/result
+}
+
+add_dependency
+build
+run_test $sleep_time
+collect_results

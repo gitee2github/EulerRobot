@@ -1,0 +1,14 @@
+suite: virttest_fuzz
+testcase: virttest_fuzz
+category: functional
+
+os: openeuler
+os_version: 20.03
+os_arch: aarch64
+os_mount: initramfs
+
+virttest_fuzz:
+    repo_name: qemu
+    repo_url: https://gitee.com/mirrors/qemu.git
+    repo_branch: master
+    sleep_time: 8h
