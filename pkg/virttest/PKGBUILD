@@ -266,6 +266,7 @@ upstream_qemu_copy() {
     mkdir -p "${pkgdir}/usr/libexec/upstream_qemu"
     cp -a "${srcdir}/qemu/openEuler-linux-gnu/qemu-system-$(arch)" "${pkgdir}/usr/libexec/upstream_qemu"
     cp -a "${srcdir}/qemu/openEuler-linux-gnu/qemu-img" "${pkgdir}/usr/libexec/upstream_qemu"
+}
 
 package() {
     lkp_virttest_copy
